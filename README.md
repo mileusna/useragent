@@ -4,7 +4,7 @@ Parse browser's and bot's user agents strings and determin user agent name, vers
 
 ## Status
 
-Still need some work on detecting Andorid device name.
+Still need some work on detecting Andorid device names.
 
 ## Installation <a id="installation"></a>
 ```
@@ -17,10 +17,10 @@ go get github.com/mileusna/useragent
 package main
 
 import (
-	"fmt"
-	"strings"
+    "fmt"
+    "strings"
 
-	"github.com/mileusna/useragent"
+    "github.com/mileusna/useragent"
 )
 
 func main() {
@@ -34,7 +34,7 @@ func main() {
         "Mozilla/5.0 (Android 4.3; Mobile; rv:54.0) Gecko/54.0 Firefox/54.0",
         "Mozilla/5.0 (Linux; Android 4.3; GT-I9300 Build/JSS15J) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.91 Mobile Safari/537.36 OPR/42.9.2246.119956",
         "Opera/9.80 (Android; Opera Mini/28.0.2254/66.318; U; en) Presto/2.12.423 Version/12.16",
-	}
+    }
 
     for _, s := range userAgents {
         ua := ua.Parse(s)
@@ -67,7 +67,7 @@ func main() {
 
 ## Notice
 
-+ Opera and Opera Mini are two browsers, since they operate on very differenta way.
++ Opera and Opera Mini are two browsers, since they operate on very different way.
 + If Googlebot (or any other bot) is detected and it is using its mobile crawler, both `bot` and `mobile` flags will be set to `true`.
 
 

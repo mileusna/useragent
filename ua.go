@@ -13,14 +13,12 @@ type UserAgent struct {
 	OS        string
 	OSVersion string
 	Device    string
-
-	Mobile  bool
-	Tablet  bool
-	Desktop bool
-	Bot     bool
-	URL     string
-
-	String string
+	Mobile    bool
+	Tablet    bool
+	Desktop   bool
+	Bot       bool
+	URL       string
+	String    string
 }
 
 var ignore = map[string]struct{}{
