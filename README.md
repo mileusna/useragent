@@ -65,6 +65,24 @@ func main() {
 
 ```
 
+## Shorthand functions
+
+Beside `UserAgent{}` struct and its properties returned by `ua.Parse()`, there is a bunch of shorthand functions for most popular browsers and operating systems, so this code:
+
+```go
+    ua := ua.Parse(userAgentString)
+    if ua.OS == "Android" && ua.Name == "Chrome" {
+        // do something
+    }
+```
+can be also written on this way:
+```go
+    ua := ua.Parse(userAgentString)
+    if ua.IsAndroid() && ua.IsChrome() {
+        // do something
+    }
+```
+
 ## Notice
 
 + Opera and Opera Mini are two browsers, since they operate on very different ways.
