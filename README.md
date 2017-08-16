@@ -67,7 +67,7 @@ func main() {
 
 ## Notice
 
-+ Opera and Opera Mini are two browsers, since they operate on very different way.
++ Opera and Opera Mini are two browsers, since they operate on very different ways.
 + If Googlebot (or any other bot) is detected and it is using its mobile crawler, both `bot` and `mobile` flags will be set to `true`.
 
 
