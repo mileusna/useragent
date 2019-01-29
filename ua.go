@@ -40,6 +40,7 @@ const (
 
 	Opera            = "Opera"
 	OperaMini        = "Opera Mini"
+	OperaTouch       = "Opera Touch"
 	Chrome           = "Chrome"
 	Firefox          = "Firefox"
 	InternetExplorer = "Internet Explorer"
@@ -137,6 +138,11 @@ func Parse(userAgent string) UserAgent {
 		ua.Version = tokens["OPR"]
 		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
 
+	case tokens["OPT"] != "":
+		ua.Name = OperaTouch
+		ua.Version = tokens["OPT"]
+		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
+
 	// Opera on iOS
 	case tokens["OPiOS"] != "":
 		ua.Name = Opera
@@ -172,6 +178,11 @@ func Parse(userAgent string) UserAgent {
 	case tokens["Edge"] != "":
 		ua.Name = Edge
 		ua.Version = tokens["Edge"]
+		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
+
+	case tokens["EdgA"] != "":
+		ua.Name = Edge
+		ua.Version = tokens["EdgA"]
 		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
 
 	case tokens["bingbot"] != "":
