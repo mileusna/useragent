@@ -175,9 +175,19 @@ func Parse(userAgent string) UserAgent {
 		ua.Name = InternetExplorer
 		ua.Version = tokens["MSIE"]
 
+	case tokens["EdgiOS"] != "":
+		ua.Name = Edge
+		ua.Version = tokens["EdgiOS"]
+		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
+
 	case tokens["Edge"] != "":
 		ua.Name = Edge
 		ua.Version = tokens["Edge"]
+		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
+
+	case tokens["Edg"] != "":
+		ua.Name = Edge
+		ua.Version = tokens["Edg"]
 		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
 
 	case tokens["EdgA"] != "":
