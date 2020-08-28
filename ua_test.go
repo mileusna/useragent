@@ -61,7 +61,8 @@ func TestParse(t *testing.T) {
 		// Bots
 		{"Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.96 Mobile Safari/537.36 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)", ua.Googlebot, "2.1", "mobile", "Android"},
 		{"Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)", ua.Googlebot, "2.1", "bot", ""},
-		{"Twitterbot/1.0", ua.Twitterbot, "1.0", "bot", ""},
+		{"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.1.1 Safari/605.1.15 (Applebot/0.1; +http://www.apple.com/go/applebot)", "Applebot", "0.1", "bot", ""},
+		{"Twitterbot/1.0", ua.Twitterbot, "1.0", ua.Applebot, ""},
 		{"facebookexternalhit/1.1", ua.FacebookExternalHit, "1.1", "bot", ""},
 
 		// other

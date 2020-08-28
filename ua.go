@@ -51,6 +51,7 @@ const (
 	Googlebot           = "Googlebot"
 	Twitterbot          = "Twitterbot"
 	FacebookExternalHit = "facebookexternalhit"
+	Applebot            = "Applebot"
 )
 
 // Parse user agent string returning UserAgent struct
@@ -127,6 +128,13 @@ func Parse(userAgent string) UserAgent {
 		ua.Version = tokens[Googlebot]
 		ua.Bot = true
 		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
+
+	case tokens.exists("Applebot"):
+		ua.Name = Applebot
+		ua.Version = tokens[Applebot]
+		ua.Bot = true
+		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
+		ua.OS = ""
 
 	case tokens["Opera Mini"] != "":
 		ua.Name = OperaMini
