@@ -67,6 +67,7 @@ func TestParse(t *testing.T) {
 
 		// other
 		{"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36 Google (+https://developers.google.com/+/web/snippet/)", ua.Chrome, "56.0.2924.87", "bot", ua.Linux}, // Google+ fetch
+		{"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) EpicGamesLauncher/12.0.9-15656527+++Portal+Release-Live UnrealEngine/4.23.0-15656527+++Portal+Release-Live Chrome/84.0.4147.38 Safari/537.36", "EpicGamesLauncher", "12.0.9-15656527+++Portal+Release-Live", "desktop", ua.Windows}, // Google+ fetch
 
 		// tools
 		{"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_4) AppleWebKit/537.36 (KHTML, like Gecko) QtWebEngine/5.6.0 Chrome/45.0.2454.101 Safari/537.36", "QtWebEngine", "5.6.0", "", "macOS"},

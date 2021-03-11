@@ -3,6 +3,7 @@ package ua
 import (
 	"bytes"
 	"regexp"
+	"sort"
 	"strings"
 )
 
@@ -407,18 +408,26 @@ func (p properties) findBestMatch(withVerOnly bool) string {
 		n = 1
 	}
 	for i := 0; i < n; i++ {
+		possibleMatches := make([]string, 0)
 		for k, v := range p {
 			switch k {
 			case Chrome, Firefox, Safari, "Version", "Mobile", "Mobile Safari", "Mozilla", "AppleWebKit", "Windows NT", "Windows Phone OS", Android, "Macintosh", Linux, "GSA":
 			default:
 				if i == 0 {
 					if v != "" { // in first check, only return  keys with value
-						return k
+						possibleMatches = append(possibleMatches, k)
 					}
 				} else {
-					return k
+					possibleMatches = append(possibleMatches, k)
 				}
 			}
+		}
+		if len(possibleMatches) > 0 {
+			// If there is more than one possible match, sort and choose the first alphabetically to stabilize.
+			if len(possibleMatches) > 1 {
+				sort.Strings(possibleMatches)
+			}
+			return possibleMatches[0]
 		}
 	}
 	return ""
