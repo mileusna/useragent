@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-// UserAgent struct containg all determined datra from parsed user-agent string
+// UserAgent struct containing all data extracted from parsed user-agent string
 type UserAgent struct {
 	Name      string
 	Version   string
@@ -29,7 +29,7 @@ var ignore = map[string]struct{}{
 	"WOW64":             struct{}{},
 }
 
-// Constants for browsers and operating systems for easier comparation
+// Constants for browsers and operating systems for easier comparison
 const (
 	Windows      = "Windows"
 	WindowsPhone = "Windows Phone"
@@ -213,7 +213,7 @@ func Parse(userAgent string) UserAgent {
 		ua.Version = tokens["SamsungBrowser"]
 		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
 
-	// if chrome and Safari defined, find any other tokensent descr
+	// if chrome and Safari defined, find any other token sent descr
 	case tokens.exists(Chrome) && tokens.exists(Safari):
 		name := tokens.findBestMatch(true)
 		if name != "" {
@@ -254,7 +254,7 @@ func Parse(userAgent string) UserAgent {
 		}
 	}
 
-	// if tabler, switch mobile to off
+	// if tablet, switch mobile to off
 	if ua.Tablet {
 		ua.Mobile = false
 	}
@@ -399,7 +399,7 @@ func (p properties) findMacOSVersion() string {
 }
 
 // findBestMatch from the rest of the bunch
-// in first cycle only return key vith version value
+// in first cycle only return key with version value
 // if withVerValue is false, do another cycle and return any token
 func (p properties) findBestMatch(withVerOnly bool) string {
 	n := 2
