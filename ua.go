@@ -228,6 +228,11 @@ func Parse(userAgent string) UserAgent {
 		ua.Version = tokens["Chrome"]
 		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
 
+	case tokens.exists("Brave Chrome"):
+		ua.Name = Chrome
+		ua.Version = tokens["Brave Chrome"]
+		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
+
 	case tokens.exists("Safari"):
 		ua.Name = Safari
 		if v, ok := tokens["Version"]; ok {
