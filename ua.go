@@ -432,6 +432,7 @@ func (p properties) findBestMatch(withVerOnly bool) string {
 var rxMacOSVer = regexp.MustCompile("[_\\d\\.]+")
 
 func findVersion(s string) string {
+
 	if ver := rxMacOSVer.FindString(s); ver != "" {
 		return strings.Replace(ver, "_", ".", -1)
 	}
