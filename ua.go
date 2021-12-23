@@ -22,11 +22,11 @@ type UserAgent struct {
 }
 
 var ignore = map[string]struct{}{
-	"KHTML, like Gecko": struct{}{},
-	"U":                 struct{}{},
-	"compatible":        struct{}{},
-	"Mozilla":           struct{}{},
-	"WOW64":             struct{}{},
+	"KHTML, like Gecko": {},
+	"U":                 {},
+	"compatible":        {},
+	"Mozilla":           {},
+	"WOW64":             {},
 }
 
 // Constants for browsers and operating systems for easier comparison
@@ -286,7 +286,7 @@ func Parse(userAgent string) UserAgent {
 }
 
 func parse(userAgent string) (clients properties) {
-	clients = make(map[string]string, 0)
+	clients = make(map[string]string)
 	slash := false
 	isURL := false
 	var buff, val bytes.Buffer
@@ -365,9 +365,9 @@ func checkVer(s string) (name, v string) {
 	switch s[:i] {
 	case "Linux", "Windows NT", "Windows Phone OS", "MSIE", "Android":
 		return s[:i], s[i+1:]
-	case "CrOS x86_64", "CrOS aarch64" :
-		j := strings.LastIndex(s[:i]," ")
-		return s[:j],s[j+1:i]
+	case "CrOS x86_64", "CrOS aarch64":
+		j := strings.LastIndex(s[:i], " ")
+		return s[:j], s[j+1 : i]
 	default:
 		return s, ""
 	}
@@ -438,7 +438,7 @@ func (p properties) findBestMatch(withVerOnly bool) string {
 	return ""
 }
 
-var rxMacOSVer = regexp.MustCompile("[_\\d\\.]+")
+var rxMacOSVer = regexp.MustCompile(`[_\d\.]+`)
 
 func findVersion(s string) string {
 	if ver := rxMacOSVer.FindString(s); ver != "" {
