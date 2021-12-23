@@ -37,6 +37,7 @@ const (
 	MacOS        = "macOS"
 	IOS          = "iOS"
 	Linux        = "Linux"
+	ChromeOS     = "CrOS"
 
 	Opera            = "Opera"
 	OperaMini        = "Opera Mini"
@@ -113,6 +114,11 @@ func Parse(userAgent string) UserAgent {
 	case tokens.exists("Linux"):
 		ua.OS = Linux
 		ua.OSVersion = tokens[Linux]
+		ua.Desktop = true
+
+	case tokens.exists("CrOS"):
+		ua.OS = ChromeOS
+		ua.OSVersion = tokens[ChromeOS]
 		ua.Desktop = true
 
 	}
@@ -359,6 +365,9 @@ func checkVer(s string) (name, v string) {
 	switch s[:i] {
 	case "Linux", "Windows NT", "Windows Phone OS", "MSIE", "Android":
 		return s[:i], s[i+1:]
+	case "CrOS x86_64", "CrOS aarch64" :
+		j := strings.LastIndex(s[:i]," ")
+		return s[:j],s[j+1:i]
 	default:
 		return s, ""
 	}
@@ -414,7 +423,7 @@ func (p properties) findBestMatch(withVerOnly bool) string {
 	for i := 0; i < n; i++ {
 		for k, v := range p {
 			switch k {
-			case Chrome, Firefox, Safari, "Version", "Mobile", "Mobile Safari", "Mozilla", "AppleWebKit", "Windows NT", "Windows Phone OS", Android, "Macintosh", Linux, "GSA":
+			case Chrome, Firefox, Safari, "Version", "Mobile", "Mobile Safari", "Mozilla", "AppleWebKit", "Windows NT", "Windows Phone OS", Android, "Macintosh", Linux, "GSA", ChromeOS:
 			default:
 				if i == 0 {
 					if v != "" { // in first check, only return  keys with value
