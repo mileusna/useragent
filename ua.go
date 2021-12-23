@@ -417,7 +417,7 @@ func (p properties) findBestMatch(withVerOnly bool) string {
 			case Chrome, Firefox, Safari, "Version", "Mobile", "Mobile Safari", "Mozilla", "AppleWebKit", "Windows NT", "Windows Phone OS", Android, "Macintosh", Linux, "GSA":
 			default:
 				if i == 0 {
-					if v != "" { // in first check, only return  keys with value
+					if v != "" { // in first check, only return keys with value
 						return k
 					}
 				} else {
