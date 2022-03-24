@@ -27,7 +27,7 @@ import (
     "fmt"
     "strings"
 
-    "github.com/mileusna/useragent"
+    ua "github.com/mileusna/useragent"
 )
 
 func main() {
