@@ -8,17 +8,17 @@ import (
 
 // UserAgent struct containing all data extracted from parsed user-agent string
 type UserAgent struct {
-	Name      string
-	Version   string
-	OS        string
-	OSVersion string
-	Device    string
-	Mobile    bool
-	Tablet    bool
-	Desktop   bool
-	Bot       bool
-	URL       string
-	String    string
+	Name      string `json:"name" yaml:"name"`
+	Version   string `json:"version" yaml:"version"`
+	OS        string `json:"os" yaml:"os"`
+	OSVersion string `json:"os_version" yaml:"os_version"`
+	Device    string `json:"device" yaml:"device"`
+	Mobile    bool   `json:"mobile" yaml:"mobile"`
+	Tablet    bool   `json:"tablet" yaml:"tablet"`
+	Desktop   bool   `json:"desktop" yaml:"desktop"`
+	Bot       bool   `json:"bot" yaml:"bot"`
+	URL       string `json:"url" yaml:"url"`
+	String    string `json:"string" yaml:"string"`
 }
 
 var ignore = map[string]struct{}{
