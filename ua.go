@@ -64,10 +64,10 @@ func Parse(userAgent string) UserAgent {
 	tokens := parse(userAgent)
 
 	// check is there URL
-	for k := range tokens {
-		if strings.HasPrefix(k, "http://") || strings.HasPrefix(k, "https://") {
-			ua.URL = k
-			delete(tokens, k)
+	for i, token := range tokens.list {
+		if strings.HasPrefix(token.Key, "http://") || strings.HasPrefix(token.Key, "https://") {
+			ua.URL = token.Key
+			tokens.list = append(tokens.list[:i], tokens.list[i+1:]...)
 			break
 		}
 	}
@@ -76,8 +76,9 @@ func Parse(userAgent string) UserAgent {
 	switch {
 	case tokens.exists("Android"):
 		ua.OS = Android
-		ua.OSVersion = tokens[Android]
-		for s := range tokens {
+		ua.OSVersion = tokens.get(Android)
+		for _, token := range tokens.list {
+			s := token.Key
 			if strings.HasSuffix(s, "Build") {
 				ua.Device = strings.TrimSpace(s[:len(s)-5])
 				ua.Tablet = strings.Contains(strings.ToLower(ua.Device), "tablet")
@@ -98,12 +99,12 @@ func Parse(userAgent string) UserAgent {
 
 	case tokens.exists("Windows NT"):
 		ua.OS = Windows
-		ua.OSVersion = tokens["Windows NT"]
+		ua.OSVersion = tokens.get("Windows NT")
 		ua.Desktop = true
 
 	case tokens.exists("Windows Phone OS"):
 		ua.OS = WindowsPhone
-		ua.OSVersion = tokens["Windows Phone OS"]
+		ua.OSVersion = tokens.get("Windows Phone OS")
 		ua.Mobile = true
 
 	case tokens.exists("Macintosh"):
@@ -113,12 +114,12 @@ func Parse(userAgent string) UserAgent {
 
 	case tokens.exists("Linux"):
 		ua.OS = Linux
-		ua.OSVersion = tokens[Linux]
+		ua.OSVersion = tokens.get(Linux)
 		ua.Desktop = true
 
 	case tokens.exists("CrOS"):
 		ua.OS = ChromeOS
-		ua.OSVersion = tokens[ChromeOS]
+		ua.OSVersion = tokens.get(ChromeOS)
 		ua.Desktop = true
 
 	}
@@ -131,92 +132,97 @@ func Parse(userAgent string) UserAgent {
 
 	case tokens.exists("Googlebot"):
 		ua.Name = Googlebot
-		ua.Version = tokens[Googlebot]
+		ua.Version = tokens.get(Googlebot)
 		ua.Bot = true
 		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
 
 	case tokens.exists("Applebot"):
 		ua.Name = Applebot
-		ua.Version = tokens[Applebot]
+		ua.Version = tokens.get(Applebot)
 		ua.Bot = true
 		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
 		ua.OS = ""
 
-	case tokens["Opera Mini"] != "":
+	case tokens.get("Opera Mini") != "":
 		ua.Name = OperaMini
-		ua.Version = tokens[OperaMini]
+		ua.Version = tokens.get(OperaMini)
 		ua.Mobile = true
 
-	case tokens["OPR"] != "":
+	case tokens.get("OPR") != "":
 		ua.Name = Opera
-		ua.Version = tokens["OPR"]
+		ua.Version = tokens.get("OPR")
 		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
 
-	case tokens["OPT"] != "":
+	case tokens.get("OPT") != "":
 		ua.Name = OperaTouch
-		ua.Version = tokens["OPT"]
+		ua.Version = tokens.get("OPT")
 		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
 
 	// Opera on iOS
-	case tokens["OPiOS"] != "":
+	case tokens.get("OPiOS") != "":
 		ua.Name = Opera
-		ua.Version = tokens["OPiOS"]
+		ua.Version = tokens.get("OPiOS")
 		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
 
 	// Chrome on iOS
-	case tokens["CriOS"] != "":
+	case tokens.get("CriOS") != "":
 		ua.Name = Chrome
-		ua.Version = tokens["CriOS"]
+		ua.Version = tokens.get("CriOS")
 		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
 
 	// Firefox on iOS
-	case tokens["FxiOS"] != "":
+	case tokens.get("FxiOS") != "":
 		ua.Name = Firefox
-		ua.Version = tokens["FxiOS"]
+		ua.Version = tokens.get("FxiOS")
 		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
 
-	case tokens["Firefox"] != "":
+	case tokens.get("Firefox") != "":
 		ua.Name = Firefox
-		ua.Version = tokens[Firefox]
-		_, ua.Mobile = tokens["Mobile"]
-		_, ua.Tablet = tokens["Tablet"]
+		ua.Version = tokens.get(Firefox)
+		ua.Mobile = tokens.exists("Mobile")
+		ua.Tablet = tokens.exists("Tablet")
 
-	case tokens["Vivaldi"] != "":
+	case tokens.get("Vivaldi") != "":
 		ua.Name = Vivaldi
-		ua.Version = tokens[Vivaldi]
+		ua.Version = tokens.get(Vivaldi)
 
 	case tokens.exists("MSIE"):
 		ua.Name = InternetExplorer
-		ua.Version = tokens["MSIE"]
+		ua.Version = tokens.get("MSIE")
 
-	case tokens["EdgiOS"] != "":
+	case tokens.get("EdgiOS") != "":
 		ua.Name = Edge
-		ua.Version = tokens["EdgiOS"]
+		ua.Version = tokens.get("EdgiOS")
 		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
 
-	case tokens["Edge"] != "":
+	case tokens.get("Edge") != "":
 		ua.Name = Edge
-		ua.Version = tokens["Edge"]
+		ua.Version = tokens.get("Edge")
 		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
 
-	case tokens["Edg"] != "":
+	case tokens.get("Edg") != "":
 		ua.Name = Edge
-		ua.Version = tokens["Edg"]
+		ua.Version = tokens.get("Edg")
 		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
 
-	case tokens["EdgA"] != "":
+	case tokens.get("EdgA") != "":
 		ua.Name = Edge
-		ua.Version = tokens["EdgA"]
+		ua.Version = tokens.get("EdgA")
 		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
 
-	case tokens["bingbot"] != "":
+	case tokens.get("bingbot") != "":
 		ua.Name = "Bingbot"
-		ua.Version = tokens["bingbot"]
+		ua.Version = tokens.get("bingbot")
 		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
 
-	case tokens["SamsungBrowser"] != "":
+	case tokens.get("YandexBot") != "":
+		ua.Name = "YandexBot"
+		ua.Version = tokens.get("YandexBot")
+		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
+
+	case tokens.get("SamsungBrowser") != "":
 		ua.Name = "Samsung Browser"
-		ua.Version = tokens["SamsungBrowser"]
+		ua.Version = tokens.get("SamsungBrowser")
 		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
 
 	// if chrome and Safari defined, find any other token sent descr
@@ -224,39 +230,40 @@ func Parse(userAgent string) UserAgent {
 		name := tokens.findBestMatch(true)
 		if name != "" {
 			ua.Name = name
-			ua.Version = tokens[name]
+			ua.Version = tokens.get(name)
 			break
 		}
 		fallthrough
 
 	case tokens.exists("Chrome"):
 		ua.Name = Chrome
-		ua.Version = tokens["Chrome"]
+		ua.Version = tokens.get("Chrome")
 		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
 
 	case tokens.exists("Brave Chrome"):
 		ua.Name = Chrome
-		ua.Version = tokens["Brave Chrome"]
+		ua.Version = tokens.get("Brave Chrome")
 		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
 
 	case tokens.exists("Safari"):
 		ua.Name = Safari
-		if v, ok := tokens["Version"]; ok {
+		v := tokens.get("Version")
+		if v != "" {
 			ua.Version = v
 		} else {
-			ua.Version = tokens["Safari"]
+			ua.Version = tokens.get("Safari")
 		}
 		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
 
 	default:
-		if ua.OS == "Android" && tokens["Version"] != "" {
+		if ua.OS == "Android" && tokens.get("Version") != "" {
 			ua.Name = "Android browser"
-			ua.Version = tokens["Version"]
+			ua.Version = tokens.get("Version")
 			ua.Mobile = true
 		} else {
 			if name := tokens.findBestMatch(false); name != "" {
 				ua.Name = name
-				ua.Version = tokens[name]
+				ua.Version = tokens.get(name)
 			} else {
 				ua.Name = ua.String
 			}
@@ -285,8 +292,10 @@ func Parse(userAgent string) UserAgent {
 	return ua
 }
 
-func parse(userAgent string) (clients properties) {
-	clients = make(map[string]string)
+func parse(userAgent string) properties {
+	clients := properties{
+		list: make([]property, 0, 8),
+	}
 	slash := false
 	isURL := false
 	var buff, val bytes.Buffer
@@ -301,9 +310,9 @@ func parse(userAgent string) (clients properties) {
 				if val.Len() == 0 { // only if value don't exists
 					var ver string
 					s, ver = checkVer(s) // determin version string and split
-					clients[s] = ver
+					clients.add(s, ver)
 				} else {
-					clients[s] = strings.TrimSpace(val.String())
+					clients.add(s, strings.TrimSpace(val.String()))
 				}
 			}
 		}
@@ -378,36 +387,60 @@ func checkVer(s string) (name, v string) {
 	// 		return s, ""
 	// 	}
 	// }
-
 	// return s[:i], s[i+1:]
-
 }
 
-type properties map[string]string
+type property struct {
+	Key   string
+	Value string
+}
+type properties struct {
+	list []property
+}
+
+func (p *properties) add(key, value string) {
+	p.list = append(p.list, property{Key: key, Value: value})
+}
+
+func (p properties) get(key string) string {
+	for _, prop := range p.list {
+		if prop.Key == key {
+			return prop.Value
+		}
+	}
+	return ""
+}
 
 func (p properties) exists(key string) bool {
-	_, ok := p[key]
-	return ok
-}
-
-func (p properties) existsAny(keys ...string) bool {
-	for _, k := range keys {
-		if _, ok := p[k]; ok {
+	for _, prop := range p.list {
+		if prop.Key == key {
 			return true
 		}
 	}
 	return false
 }
 
+func (p properties) existsAny(keys ...string) bool {
+	for _, k := range keys {
+		for _, prop := range p.list {
+			if prop.Key == k {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 func (p properties) findMacOSVersion() string {
-	for k, v := range p {
-		if strings.Contains(k, "OS") {
-			if ver := findVersion(v); ver != "" {
+	for _, token := range p.list {
+		if strings.Contains(token.Key, "OS") {
+			if ver := findVersion(token.Value); ver != "" {
 				return ver
-			} else if ver = findVersion(k); ver != "" {
+			} else if ver = findVersion(token.Key); ver != "" {
 				return ver
 			}
 		}
+
 	}
 	return ""
 }
@@ -421,16 +454,16 @@ func (p properties) findBestMatch(withVerOnly bool) string {
 		n = 1
 	}
 	for i := 0; i < n; i++ {
-		for k, v := range p {
-			switch k {
+		for _, prop := range p.list {
+			switch prop.Key {
 			case Chrome, Firefox, Safari, "Version", "Mobile", "Mobile Safari", "Mozilla", "AppleWebKit", "Windows NT", "Windows Phone OS", Android, "Macintosh", Linux, "GSA", ChromeOS:
 			default:
 				if i == 0 {
-					if v != "" { // in first check, only return keys with value
-						return k
+					if prop.Value != "" { // in first check, only return keys with value
+						return prop.Key
 					}
 				} else {
-					return k
+					return prop.Key
 				}
 			}
 		}
