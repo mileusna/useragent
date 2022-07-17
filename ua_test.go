@@ -70,6 +70,7 @@ var testTable = [][]string{
 	{"facebookexternalhit/1.1", ua.FacebookExternalHit, "1.1", "bot", ""},
 	{"Mozilla/5.0 (compatible; SemrushBot/7~bl; +http://www.semrush.com/bot.html", "SemrushBot", "7~bl", "bot", ""},
 	{"Mozilla/5.0 (compatible; YandexBot/3.0; +http://yandex.com/bots) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.268", "YandexBot", "3.0", "bot", ""},
+	{"Mozilla/5.0 (compatible; Discordbot/2.0; +https://discordapp.com)", "Discordbot", "2.0", "bot", ""},
 
 	// Brave
 	{"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Brave Chrome/87.0.4280.101 Safari/537.36", ua.Chrome, "87.0.4280.101", "desktop", ua.Linux},
