@@ -1,4 +1,4 @@
-package ua
+package useragent
 
 // IsWindows shorthand function to check if OS == Windows
 func (ua UserAgent) IsWindows() bool {
@@ -23,6 +23,11 @@ func (ua UserAgent) IsIOS() bool {
 // IsLinux shorthand function to check if OS == Linux
 func (ua UserAgent) IsLinux() bool {
 	return ua.OS == Linux
+}
+
+// IsChromeOS shorthand function to check if OS == CrOS
+func (ua UserAgent) IsChromeOS() bool {
+	return ua.OS == ChromeOS || ua.OS == "CrOS"
 }
 
 // IsOpera shorthand function to check if Name == Opera
