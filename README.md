@@ -1,6 +1,6 @@
 # Go/Golang package for parsing user agent strings [![GoDoc](https://godoc.org/github.com/mileusna/useragent?status.svg)](https://godoc.org/github.com/mileusna/useragent)
 
-Package `ua.Parse(userAgent string)` function parses browser's and bot's user agents strings and determins:
+Use `useragent.Parse(userAgent string)` function to parse  browser's and bot's user agents strings and get:
 + User agent name and version (Chrome, Firefox, Googlebot, etc.)
 + Operating system name and version  (Windows, Android, iOS etc.)
 + Device type (mobile, desktop, tablet, bot)
@@ -27,7 +27,7 @@ import (
     "fmt"
     "strings"
 
-    ua "github.com/mileusna/useragent"
+    "github.com/mileusna/useragent"
 )
 
 func main() {
@@ -44,7 +44,7 @@ func main() {
     }
 
     for _, s := range userAgents {
-        ua := ua.Parse(s)
+        ua := useragent.Parse(s)
         fmt.Println()
         fmt.Println(ua.String)
         fmt.Println(strings.Repeat("=", len(ua.String)))
@@ -74,17 +74,17 @@ func main() {
 
 ## Shorthand functions
 
-Beside `UserAgent{}` struct and its properties returned by `ua.Parse()`, there is a bunch of shorthand functions for most popular browsers and operating systems, so this code:
+Beside `UserAgent{}` struct and its properties returned by `useragent.Parse()`, there is a bunch of shorthand functions for most popular browsers and operating systems, so this code:
 
 ```go
-    ua := ua.Parse(userAgentString)
+    ua := useragent.Parse(userAgentString)
     if ua.OS == "Android" && ua.Name == "Chrome" {
         // do something
     }
 ```
 can be also written on this way:
 ```go
-    ua := ua.Parse(userAgentString)
+    ua := useragent.Parse(userAgentString)
     if ua.IsAndroid() && ua.IsChrome() {
         // do something
     }
