@@ -1,6 +1,6 @@
 # Go/Golang package for parsing user agent strings [![GoDoc](https://godoc.org/github.com/mileusna/useragent?status.svg)](https://godoc.org/github.com/mileusna/useragent)
 
-Use `useragent.Parse(userAgent string)` function to parse  browser's and bot's user agents strings and get:
+Use `useragent.Parse(userAgent string)` function to parse browser's and bot's user agents strings and get:
 + User agent name and version (Chrome, Firefox, Googlebot, etc.)
 + Operating system name and version  (Windows, Android, iOS etc.)
 + Device type (mobile, desktop, tablet, bot)

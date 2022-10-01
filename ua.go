@@ -43,12 +43,14 @@ const (
 	OperaMini        = "Opera Mini"
 	OperaTouch       = "Opera Touch"
 	Chrome           = "Chrome"
+	HeadlessChrome   = "Headless Chrome"
 	Firefox          = "Firefox"
 	InternetExplorer = "Internet Explorer"
 	Safari           = "Safari"
 	Edge             = "Edge"
 	Vivaldi          = "Vivaldi"
 
+	GoogleAdsBot        = "Google Ads Bot"
 	Googlebot           = "Googlebot"
 	Twitterbot          = "Twitterbot"
 	FacebookExternalHit = "facebookexternalhit"
@@ -224,6 +226,25 @@ func Parse(userAgent string) UserAgent {
 		ua.Name = "Samsung Browser"
 		ua.Version = tokens.get("SamsungBrowser")
 		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
+
+	case tokens.get("HeadlessChrome") != "":
+		ua.Name = HeadlessChrome
+		ua.Version = tokens.get("HeadlessChrome")
+		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
+		ua.Bot = true
+
+	case tokens.exists("AdsBot-Google-Mobile") || tokens.exists("Mediapartners-Google") || tokens.exists("AdsBot-Google"):
+		ua.Name = GoogleAdsBot
+		ua.Bot = true
+		ua.Mobile = ua.IsAndroid() || ua.IsIOS()
+
+	case tokens.exists("XiaoMi"):
+		miui := tokens.get("XiaoMi")
+		if strings.HasPrefix(miui, "MiuiBrowser") {
+			ua.Name = "Miui Browser"
+			ua.Version = strings.TrimPrefix(miui, "MiuiBrowser/")
+			ua.Mobile = true
+		}
 
 	case tokens.get("HuaweiBrowser") != "":
 		ua.Name = "Huawei Browser"
