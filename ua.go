@@ -1,4 +1,4 @@
-package ua
+package useragent
 
 import (
 	"bytes"
@@ -37,22 +37,25 @@ const (
 	MacOS        = "macOS"
 	IOS          = "iOS"
 	Linux        = "Linux"
-	ChromeOS     = "CrOS"
+	ChromeOS     = "ChromeOS"
 
 	Opera            = "Opera"
 	OperaMini        = "Opera Mini"
 	OperaTouch       = "Opera Touch"
 	Chrome           = "Chrome"
+	HeadlessChrome   = "Headless Chrome"
 	Firefox          = "Firefox"
 	InternetExplorer = "Internet Explorer"
 	Safari           = "Safari"
 	Edge             = "Edge"
 	Vivaldi          = "Vivaldi"
 
+	GoogleAdsBot        = "Google Ads Bot"
 	Googlebot           = "Googlebot"
 	Twitterbot          = "Twitterbot"
 	FacebookExternalHit = "facebookexternalhit"
 	Applebot            = "Applebot"
+	Bingbot             = "Bingbot"
 )
 
 // Parse user agent string returning UserAgent struct
@@ -119,9 +122,8 @@ func Parse(userAgent string) UserAgent {
 
 	case tokens.exists("CrOS"):
 		ua.OS = ChromeOS
-		ua.OSVersion = tokens.get(ChromeOS)
+		ua.OSVersion = tokens.get("CrOS")
 		ua.Desktop = true
-
 	}
 
 	// for s, val := range sys {
@@ -211,7 +213,7 @@ func Parse(userAgent string) UserAgent {
 		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
 
 	case tokens.get("bingbot") != "":
-		ua.Name = "Bingbot"
+		ua.Name = Bingbot
 		ua.Version = tokens.get("bingbot")
 		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
 
@@ -223,6 +225,30 @@ func Parse(userAgent string) UserAgent {
 	case tokens.get("SamsungBrowser") != "":
 		ua.Name = "Samsung Browser"
 		ua.Version = tokens.get("SamsungBrowser")
+		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
+
+	case tokens.get("HeadlessChrome") != "":
+		ua.Name = HeadlessChrome
+		ua.Version = tokens.get("HeadlessChrome")
+		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
+		ua.Bot = true
+
+	case tokens.exists("AdsBot-Google-Mobile") || tokens.exists("Mediapartners-Google") || tokens.exists("AdsBot-Google"):
+		ua.Name = GoogleAdsBot
+		ua.Bot = true
+		ua.Mobile = ua.IsAndroid() || ua.IsIOS()
+
+	case tokens.exists("XiaoMi"):
+		miui := tokens.get("XiaoMi")
+		if strings.HasPrefix(miui, "MiuiBrowser") {
+			ua.Name = "Miui Browser"
+			ua.Version = strings.TrimPrefix(miui, "MiuiBrowser/")
+			ua.Mobile = true
+		}
+
+	case tokens.get("HuaweiBrowser") != "":
+		ua.Name = "Huawei Browser"
+		ua.Version = tokens.get("HuaweiBrowser")
 		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
 
 	// if chrome and Safari defined, find any other token sent descr
@@ -456,7 +482,7 @@ func (p properties) findBestMatch(withVerOnly bool) string {
 	for i := 0; i < n; i++ {
 		for _, prop := range p.list {
 			switch prop.Key {
-			case Chrome, Firefox, Safari, "Version", "Mobile", "Mobile Safari", "Mozilla", "AppleWebKit", "Windows NT", "Windows Phone OS", Android, "Macintosh", Linux, "GSA", ChromeOS:
+			case Chrome, Firefox, Safari, "Version", "Mobile", "Mobile Safari", "Mozilla", "AppleWebKit", "Windows NT", "Windows Phone OS", Android, "Macintosh", Linux, "GSA", "CrOS":
 			default:
 				if i == 0 {
 					if prop.Value != "" { // in first check, only return keys with value
