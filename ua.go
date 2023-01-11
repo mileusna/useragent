@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-var mobiles = []string{"Mobile", "Mobile Safari", "iPhone"}
+var mobileStrings = []string{"Mobile", "Mobile Safari", "iPhone"}
 
 // UserAgent struct containing all data extracted from parsed user-agent string
 type UserAgent struct {
@@ -134,13 +134,13 @@ func Parse(userAgent string) UserAgent {
 		ua.Name = Googlebot
 		ua.Version = tokens.get(Googlebot)
 		ua.Bot = true
-		ua.Mobile = tokens.existsAny(mobiles...)
+		ua.Mobile = tokens.existsAny(mobileStrings...)
 
 	case tokens.exists("Applebot"):
 		ua.Name = Applebot
 		ua.Version = tokens.get(Applebot)
 		ua.Bot = true
-		ua.Mobile = tokens.existsAny(mobiles...)
+		ua.Mobile = tokens.existsAny(mobileStrings...)
 		ua.OS = ""
 
 	case tokens.get("Opera Mini") != "":
@@ -151,30 +151,30 @@ func Parse(userAgent string) UserAgent {
 	case tokens.get("OPR") != "":
 		ua.Name = Opera
 		ua.Version = tokens.get("OPR")
-		ua.Mobile = tokens.existsAny(mobiles...)
+		ua.Mobile = tokens.existsAny(mobileStrings...)
 
 	case tokens.get("OPT") != "":
 		ua.Name = OperaTouch
 		ua.Version = tokens.get("OPT")
-		ua.Mobile = tokens.existsAny(mobiles...)
+		ua.Mobile = tokens.existsAny(mobileStrings...)
 
 	// Opera on iOS
 	case tokens.get("OPiOS") != "":
 		ua.Name = Opera
 		ua.Version = tokens.get("OPiOS")
-		ua.Mobile = tokens.existsAny(mobiles...)
+		ua.Mobile = tokens.existsAny(mobileStrings...)
 
 	// Chrome on iOS
 	case tokens.get("CriOS") != "":
 		ua.Name = Chrome
 		ua.Version = tokens.get("CriOS")
-		ua.Mobile = tokens.existsAny(mobiles...)
+		ua.Mobile = tokens.existsAny(mobileStrings...)
 
 	// Firefox on iOS
 	case tokens.get("FxiOS") != "":
 		ua.Name = Firefox
 		ua.Version = tokens.get("FxiOS")
-		ua.Mobile = tokens.existsAny(mobiles...)
+		ua.Mobile = tokens.existsAny(mobileStrings...)
 
 	case tokens.get("Firefox") != "":
 		ua.Name = Firefox
@@ -193,42 +193,42 @@ func Parse(userAgent string) UserAgent {
 	case tokens.get("EdgiOS") != "":
 		ua.Name = Edge
 		ua.Version = tokens.get("EdgiOS")
-		ua.Mobile = tokens.existsAny(mobiles...)
+		ua.Mobile = tokens.existsAny(mobileStrings...)
 
 	case tokens.get("Edge") != "":
 		ua.Name = Edge
 		ua.Version = tokens.get("Edge")
-		ua.Mobile = tokens.existsAny(mobiles...)
+		ua.Mobile = tokens.existsAny(mobileStrings...)
 
 	case tokens.get("Edg") != "":
 		ua.Name = Edge
 		ua.Version = tokens.get("Edg")
-		ua.Mobile = tokens.existsAny(mobiles...)
+		ua.Mobile = tokens.existsAny(mobileStrings...)
 
 	case tokens.get("EdgA") != "":
 		ua.Name = Edge
 		ua.Version = tokens.get("EdgA")
-		ua.Mobile = tokens.existsAny(mobiles...)
+		ua.Mobile = tokens.existsAny(mobileStrings...)
 
 	case tokens.get("bingbot") != "":
 		ua.Name = Bingbot
 		ua.Version = tokens.get("bingbot")
-		ua.Mobile = tokens.existsAny(mobiles...)
+		ua.Mobile = tokens.existsAny(mobileStrings...)
 
 	case tokens.get("YandexBot") != "":
 		ua.Name = "YandexBot"
 		ua.Version = tokens.get("YandexBot")
-		ua.Mobile = tokens.existsAny(mobiles...)
+		ua.Mobile = tokens.existsAny(mobileStrings...)
 
 	case tokens.get("SamsungBrowser") != "":
 		ua.Name = "Samsung Browser"
 		ua.Version = tokens.get("SamsungBrowser")
-		ua.Mobile = tokens.existsAny(mobiles...)
+		ua.Mobile = tokens.existsAny(mobileStrings...)
 
 	case tokens.get("HeadlessChrome") != "":
 		ua.Name = HeadlessChrome
 		ua.Version = tokens.get("HeadlessChrome")
-		ua.Mobile = tokens.existsAny(mobiles...)
+		ua.Mobile = tokens.existsAny(mobileStrings...)
 		ua.Bot = true
 
 	case tokens.exists("AdsBot-Google-Mobile") || tokens.exists("Mediapartners-Google") || tokens.exists("AdsBot-Google"):
@@ -247,7 +247,7 @@ func Parse(userAgent string) UserAgent {
 	case tokens.get("HuaweiBrowser") != "":
 		ua.Name = "Huawei Browser"
 		ua.Version = tokens.get("HuaweiBrowser")
-		ua.Mobile = tokens.existsAny(mobiles...)
+		ua.Mobile = tokens.existsAny(mobileStrings...)
 
 	// if chrome and Safari defined, find any other token sent descr
 	case tokens.exists(Chrome) && tokens.exists(Safari):
@@ -255,6 +255,7 @@ func Parse(userAgent string) UserAgent {
 		if name != "" {
 			ua.Name = name
 			ua.Version = tokens.get(name)
+			ua.Mobile = tokens.existsAny(mobileStrings...)
 			break
 		}
 		fallthrough
@@ -262,12 +263,12 @@ func Parse(userAgent string) UserAgent {
 	case tokens.exists("Chrome"):
 		ua.Name = Chrome
 		ua.Version = tokens.get("Chrome")
-		ua.Mobile = tokens.existsAny(mobiles...)
+		ua.Mobile = tokens.existsAny(mobileStrings...)
 
 	case tokens.exists("Brave Chrome"):
 		ua.Name = Chrome
 		ua.Version = tokens.get("Brave Chrome")
-		ua.Mobile = tokens.existsAny(mobiles...)
+		ua.Mobile = tokens.existsAny(mobileStrings...)
 
 	case tokens.exists("Safari"):
 		ua.Name = Safari
@@ -277,7 +278,7 @@ func Parse(userAgent string) UserAgent {
 		} else {
 			ua.Version = tokens.get("Safari")
 		}
-		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari", "iPhone")
+		ua.Mobile = tokens.existsAny(mobileStrings...)
 
 	default:
 		if ua.OS == "Android" && tokens.get("Version") != "" {
@@ -292,8 +293,8 @@ func Parse(userAgent string) UserAgent {
 				ua.Name = ua.String
 			}
 			ua.Bot = strings.Contains(strings.ToLower(ua.Name), "bot")
-			ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari", "iPhone")
 		}
+		ua.Mobile = tokens.existsAny(mobileStrings...)
 	}
 
 	// if tablet, switch mobile to off
@@ -447,7 +448,7 @@ func (p properties) exists(key string) bool {
 func (p properties) existsAny(keys ...string) bool {
 	for _, k := range keys {
 		for _, prop := range p.list {
-			if strings.ToLower(prop.Key) == strings.ToLower(k) {
+			if strings.Contains(strings.ToLower(prop.Key), strings.ToLower(k)) {
 				return true
 			}
 		}

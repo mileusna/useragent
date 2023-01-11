@@ -2239,5 +2239,9 @@ func TestMobileUAs(t *testing.T) {
 		if strings.Contains(strings.ToLower(ua), "iphone") {
 			assert.Equal(t, true, parsedUA.Mobile, ua)
 		}
+
+		if strings.Contains(strings.ToLower(ua), "mobile") {
+			assert.Equal(t, true, parsedUA.Mobile, ua)
+		}
 	}
 }
