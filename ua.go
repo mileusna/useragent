@@ -80,10 +80,10 @@ func Parse(userAgent string) UserAgent {
 	case tokens.exists("Android"):
 		ua.OS = Android
 		ua.OSVersion = tokens.get(Android)
-		for _, token := range tokens.list {
+		for index, token := range tokens.list {
 			s := token.Key
-			if strings.HasSuffix(s, "Build") {
-				ua.Device = strings.TrimSpace(s[:len(s)-5])
+			if index == 2 {
+				ua.Device = s
 				ua.Tablet = strings.Contains(strings.ToLower(ua.Device), "tablet")
 			}
 		}
