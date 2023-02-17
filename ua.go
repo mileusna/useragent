@@ -57,7 +57,8 @@ const (
 	Applebot            = "Applebot"
 	Bingbot             = "Bingbot"
 
-	FacebookApp = "Facebook App"
+	FacebookApp  = "Facebook App"
+	InstagramApp = "Instagram App"
 )
 
 // Parse user agent string returning UserAgent struct
@@ -250,6 +251,14 @@ func Parse(userAgent string) UserAgent {
 
 	case tokens.exists("FBAN"):
 		ua.Name = FacebookApp
+		ua.Version = tokens.get("FBAN")
+	case tokens.exists("FB_IAB"):
+		ua.Name = FacebookApp
+		ua.Version = tokens.get("FBAV")
+
+	case tokens.startsWith("Instagram"):
+		ua.Name = InstagramApp
+		ua.Version = tokens.findInstagramVersion()
 
 	case tokens.get("HuaweiBrowser") != "":
 		ua.Name = "Huawei Browser"
@@ -473,6 +482,29 @@ func (p properties) existsAny(keys ...string) bool {
 func (p properties) findMacOSVersion() string {
 	for _, token := range p.list {
 		if strings.Contains(token.Key, "OS") {
+			if ver := findVersion(token.Value); ver != "" {
+				return ver
+			} else if ver = findVersion(token.Key); ver != "" {
+				return ver
+			}
+		}
+
+	}
+	return ""
+}
+
+func (p properties) startsWith(value string) bool {
+	for _, prop := range p.list {
+		if strings.HasPrefix(prop.Key, value) {
+			return true
+		}
+	}
+	return false
+}
+
+func (p properties) findInstagramVersion() string {
+	for _, token := range p.list {
+		if strings.HasPrefix(token.Key, "Instagram") {
 			if ver := findVersion(token.Value); ver != "" {
 				return ver
 			} else if ver = findVersion(token.Key); ver != "" {
