@@ -56,6 +56,8 @@ const (
 	FacebookExternalHit = "facebookexternalhit"
 	Applebot            = "Applebot"
 	Bingbot             = "Bingbot"
+
+	FacebookApp = "Facebook App"
 )
 
 // Parse user agent string returning UserAgent struct
@@ -246,6 +248,9 @@ func Parse(userAgent string) UserAgent {
 			ua.Mobile = true
 		}
 
+	case tokens.exists("FBAN"):
+		ua.Name = FacebookApp
+
 	case tokens.get("HuaweiBrowser") != "":
 		ua.Name = "Huawei Browser"
 		ua.Version = tokens.get("HuaweiBrowser")
@@ -349,6 +354,7 @@ func parse(userAgent string) properties {
 	}
 
 	parOpen := false
+	braOpen := false
 
 	bua := []byte(userAgent)
 	for i, c := range bua {
@@ -359,12 +365,19 @@ func parse(userAgent string) properties {
 			addToken()
 			parOpen = false
 
-		case parOpen && c == 59: // ;
+		case (parOpen || braOpen) && c == 59: // ;
 			addToken()
 
 		case c == 40: // (
 			addToken()
 			parOpen = true
+
+		case c == 91: // [
+			addToken()
+			braOpen = true
+		case c == 93: // ]
+			addToken()
+			braOpen = false
 
 		case slash && c == 32:
 			addToken()
