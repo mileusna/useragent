@@ -99,7 +99,9 @@ var testTable = [][]string{
 	{"Mozilla/5.0 (iPhone; CPU iPhone OS 16_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 Instagram 270.0.0.13.83 (iPhone13,2; iOS 16_3; es_ES; es-ES; scale=3.00; 1170x2532; 445843881) NW/1", ua.InstagramApp, "270.0.0.13.83", "mobile", ua.IOS},
 
 	// Tiktok
-	{"Mozilla/5.0 (iPhone; CPU iPhone OS 15_5 like Mac OS ) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 musical_ly_28.2.0 JsSdk/2.0 NetType/WIFI Channel/App Store ByteLocale/es Region/PE RevealType/Dialog isDarkMode/0 WKWebView/1 BytedanceWebview/d8a21c6 FalconTag/D6EBBF89-6D75-4BBD-9304-BF199C6B4DB1", ua.TiktokApp, "d8a21c6", "mobile", ua.IOS},
+	{"Mozilla/5.0 (iPhone; CPU iPhone OS 15_5 like Mac OS ) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 musical_ly_28.2.0 JsSdk/2.0 NetType/WIFI Channel/App Store ByteLocale/es Region/PE RevealType/Dialog isDarkMode/0 WKWebView/1 BytedanceWebview/d8a21c6 FalconTag/D6EBBF89-6D75-4BBD-9304-BF199C6B4DB1", ua.TiktokApp, "", "mobile", ua.IOS},
+	{"Mozilla/5.0 (Linux; Android 10; AGS3K-W09 Build/HUAWEIAGS3K-W09; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/88.0.4324.93 Safari/537.36 trill_2022803040 JsSdk/1.0 NetType/WIFI Channel/huaweiadsglobal_int AppName/musical_ly app_version/28.3.4 ByteLocale/es ByteFullLocale/es Region/PE BytedanceWebview/d8a21c6", ua.TiktokApp, "28.3.4", ua.Android},
+
 	// other
 	{"Mozilla/5.0 (X11; CrOS x86_64 14150.74.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.114 Safari/537.36", ua.Chrome, "94.0.4606.114", "desktop", ua.ChromeOS},
 	{"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36 Google (+https://developers.google.com/+/web/snippet/)", ua.Chrome, "56.0.2924.87", "bot", ua.Linux}, // Google+ fetch

@@ -263,7 +263,7 @@ func Parse(userAgent string) UserAgent {
 
 	case tokens.exists("BytedanceWebview"):
 		ua.Name = TiktokApp
-		ua.Version = tokens.get("BytedanceWebview")
+		ua.Version = tokens.get("app_version")
 
 	case tokens.get("HuaweiBrowser") != "":
 		ua.Name = "Huawei Browser"
