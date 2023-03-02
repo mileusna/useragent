@@ -59,6 +59,7 @@ const (
 
 	FacebookApp  = "Facebook App"
 	InstagramApp = "Instagram App"
+	TiktokApp    = "TikTok App"
 )
 
 // Parse user agent string returning UserAgent struct
@@ -259,6 +260,10 @@ func Parse(userAgent string) UserAgent {
 	case tokens.startsWith("Instagram"):
 		ua.Name = InstagramApp
 		ua.Version = tokens.findInstagramVersion()
+
+	case tokens.exists("BytedanceWebview"):
+		ua.Name = TiktokApp
+		ua.Version = tokens.get("BytedanceWebview")
 
 	case tokens.get("HuaweiBrowser") != "":
 		ua.Name = "Huawei Browser"
