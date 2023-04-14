@@ -129,6 +129,7 @@ var testTable = [][]string{
 	{"Mozilla/5.0 (Linux; Android 5.1; B3-A20 Build/LMY47I) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.89 Safari/537.36", ua.Chrome, "50.0.2661.89", "mobile", ua.Android, "B3-A20"},
 	{"Mozilla/5.0 (Linux; Android 11; TPC_8074G Build/RP1A.200720.011) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.5195.136 Safari/537.36", ua.Chrome, "105.0.5195.136", "mobile", ua.Android, "TPC_8074G"},
 	{"Mozilla/5.0 (Linux; Android 9; m5621 Build/PPR2.180905.006.A1; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/66.0.3359.158 Safari/537.36", ua.Chrome, "66.0.3359.158", "mobile", ua.Android, "m5621"},
+	{"Mozilla/5.0 (Linux; Android 10; meanIT_X20 Build/QP1A.190711.020) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.5481.153 Safari/537.36", ua.Chrome, "110.0.5481.153", "mobile", ua.Android, "meanIT_X20"},
 
 	//GooglePlus   "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36 Google (+https://developers.google.com/+/web/snippet/)"
 	//Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/600.2.5 (KHTML, like Gecko) Version/8.0.2 Safari/600.2.5 (Applebot/0.1; +http://www.apple.com/go/applebot)
