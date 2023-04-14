@@ -88,16 +88,10 @@ func Parse(userAgent string) UserAgent {
 	switch {
 	case tokens.exists("Android"):
 		ua.OS = Android
-		ua.OSVersion = tokens.get(Android)
+		var osIndex int
+		osIndex, ua.OSVersion = tokens.getIndexValue(Android)
 		ua.Tablet = strings.Contains(strings.ToLower(ua.String), "tablet")
-		for _, token := range tokens.list {
-			s := token.Key
-			if strings.HasPrefix(s, "Lenovo") || strings.HasPrefix(s, "SM-") || strings.HasPrefix(s, "AGS") || strings.HasPrefix(s, "Redmi") || strings.HasPrefix(s, "SAMSUNG") || strings.HasPrefix(s, "HUAWEI") || strings.HasPrefix(s, "Nokia ") || strings.HasPrefix(s, "Moto ") {
-				ua.Device = s
-			} else if strings.HasSuffix(s, "Build") {
-				ua.Device = strings.TrimSpace(s[:len(s)-5])
-			}
-		}
+		ua.Device = tokens.findAndroidDevice(osIndex)
 
 	case tokens.exists("iPhone"):
 		ua.OS = IOS
@@ -364,7 +358,6 @@ func parse(userAgent string) properties {
 		if buff.Len() != 0 {
 			s := strings.TrimSpace(buff.String())
 			if !ignore(s) {
-				// if _, ign := ignore[s]; !ign {
 				if isURL {
 					s = strings.TrimPrefix(s, "+")
 				}
@@ -463,7 +456,7 @@ func checkVer(s string) (name, v string) {
 // ignore retursn true if token should be ignored
 func ignore(s string) bool {
 	switch s {
-	case "KHTML, like Gecko", "U", "compatible", "Mozilla", "WOW64":
+	case "KHTML, like Gecko", "U", "compatible", "Mozilla", "WOW64", "en", "en-us", "en-gb", "ru-ru":
 		return true
 	default:
 		return false
@@ -489,6 +482,15 @@ func (p properties) get(key string) string {
 		}
 	}
 	return ""
+}
+
+func (p properties) getIndexValue(key string) (int, string) {
+	for i, prop := range p.list {
+		if prop.Key == key {
+			return i, prop.Value
+		}
+	}
+	return 0, ""
 }
 
 func (p properties) exists(key string) bool {
@@ -583,6 +585,26 @@ var rxMacOSVer = regexp.MustCompile(`[_\d\.]+`)
 func findVersion(s string) string {
 	if ver := rxMacOSVer.FindString(s); ver != "" {
 		return strings.Replace(ver, "_", ".", -1)
+	}
+	return ""
+}
+
+// findAndroidDevice in tokens
+func (p properties) findAndroidDevice(startIndex int) string {
+	for i := startIndex; i < startIndex+1; i++ {
+		if len(p.list) > i {
+			dev := p.list[i+1].Key
+			if len(dev) == 2 || (len(dev) == 5 && dev[2] == '-') {
+				// probably langage tag (en-us etc..), ignore and continue loop
+				continue
+			}
+			switch dev {
+			case Chrome, Firefox, Safari, "Version", "Mobile", "Mobile Safari", "Mozilla", "AppleWebKit", "Windows NT", "Windows Phone OS", Android, "Macintosh", Linux, "CrOS":
+				// ignore this tokens, not device names
+			default:
+				return strings.TrimSpace(strings.TrimSuffix(dev, "Build"))
+			}
+		}
 	}
 	return ""
 }
