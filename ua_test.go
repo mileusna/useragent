@@ -164,7 +164,7 @@ func TestParse(t *testing.T) {
 			t.Error("\n", test[0], "Device should be", test[5], "not", ua.Device)
 		}
 
-		//fmt.Println(ua.OS, ua.OSVersion, ua.Device)
+		// fmt.Println(ua.Version, "==>", ua.VersionNoShort())
 
 	}
 }

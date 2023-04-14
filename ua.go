@@ -8,27 +8,19 @@ import (
 
 // UserAgent struct containing all data extracted from parsed user-agent string
 type UserAgent struct {
-	URL       string
-	String    string
-	Name      string
-	Version   string
-	OS        string
-	OSVersion string
-	Device    string
-	// VersionNo struct {
-	// 	Major int
-	// 	Minor int
-	// 	Patch int
-	// }
-	// OSVersionNo struct {
-	// 	Major int
-	// 	Minor int
-	// 	Patch int
-	// }
-	Mobile  bool
-	Tablet  bool
-	Desktop bool
-	Bot     bool
+	VersionNo   VersionNo
+	OSVersionNo VersionNo
+	URL         string
+	String      string
+	Name        string
+	Version     string
+	OS          string
+	OSVersion   string
+	Device      string
+	Mobile      bool
+	Tablet      bool
+	Desktop     bool
+	Bot         bool
 }
 
 // Constants for browsers and operating systems for easier comparison
@@ -343,6 +335,9 @@ func Parse(userAgent string) UserAgent {
 			ua.Bot = true
 		}
 	}
+
+	parseVersion(ua.Version, &ua.VersionNo)
+	parseVersion(ua.OSVersion, &ua.OSVersionNo)
 
 	return ua
 }
