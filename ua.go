@@ -73,43 +73,6 @@ func Parse(userAgent string) UserAgent {
 		}
 	}
 
-	// if i, ver := tokens.getIndexValue("Android"); i != -1 {
-	// 	ua.OS = Android
-	// 	ua.OSVersion = ver
-	// 	ua.Tablet = strings.Contains(strings.ToLower(ua.String), "tablet")
-	// 	ua.Device = tokens.findAndroidDevice(i)
-	// } else if tokens.exists("iPhone") {
-	// 	ua.OS = IOS
-	// 	ua.OSVersion = tokens.findMacOSVersion()
-	// 	ua.Device = "iPhone"
-	// 	ua.Mobile = true
-	// } else if tokens.exists("iPad") {
-	// 	ua.OS = IOS
-	// 	ua.OSVersion = tokens.findMacOSVersion()
-	// 	ua.Device = "iPad"
-	// 	ua.Tablet = true
-	// } else if i, ver := tokens.getIndexValue("Windows NT"); i != -1 {
-	// 	ua.OS = Windows
-	// 	ua.OSVersion = ver
-	// 	ua.Desktop = true
-	// } else if index, ver := tokens.getIndexValue("Windows Phone OS"); index != -1 {
-	// 	ua.OS = WindowsPhone
-	// 	ua.OSVersion = ver
-	// 	ua.Mobile = true
-	// } else if tokens.exists("Macintosh") {
-	// 	ua.OS = MacOS
-	// 	ua.OSVersion = tokens.findMacOSVersion()
-	// 	ua.Desktop = true
-	// } else if i, ver := tokens.getIndexValue("Linux"); i != -1 {
-	// 	ua.OS = Linux
-	// 	ua.OSVersion = ver
-	// 	ua.Desktop = true
-	// } else if i, ver := tokens.getIndexValue("CrOS"); i != -1 {
-	// 	ua.OS = ChromeOS
-	// 	ua.OSVersion = ver
-	// 	ua.Desktop = true
-	// }
-
 	// OS lookup
 	switch {
 	case tokens.exists("Android"):
@@ -157,26 +120,7 @@ func Parse(userAgent string) UserAgent {
 		ua.Desktop = true
 	}
 
-	// for s, val := range sys {
-	// 	fmt.Println(s, "--", val)
-	// }
-
-	// if index, ver := tokens.getIndexValue("Googlebot"); index != -1 {
-	// 	ua.Name = Googlebot
-	// 	ua.Version = ver
-	// 	ua.Bot = true
-	// 	ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
-
-	// } else if index, ver := tokens.getIndexValue("Applebot"); index != -1 {
-	// 	ua.Name = Applebot
-	// 	ua.Version = ver
-	// 	ua.Bot = true
-	// 	ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
-	// 	ua.OS = ""
-	// }
-
 	switch {
-
 	case tokens.exists("Googlebot"):
 		ua.Name = Googlebot
 		ua.Version = tokens.get(Googlebot)
