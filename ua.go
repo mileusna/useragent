@@ -31,15 +31,6 @@ type UserAgent struct {
 	Bot     bool
 }
 
-// TODO: turn to slice, check performance
-var ignore = map[string]struct{}{
-	"KHTML, like Gecko": {},
-	"U":                 {},
-	"compatible":        {},
-	"Mozilla":           {},
-	"WOW64":             {},
-}
-
 // Constants for browsers and operating systems for easier comparison
 const (
 	Windows      = "Windows"
@@ -372,7 +363,8 @@ func parse(userAgent string) properties {
 	addToken := func() {
 		if buff.Len() != 0 {
 			s := strings.TrimSpace(buff.String())
-			if _, ign := ignore[s]; !ign {
+			if !ignore(s) {
+				// if _, ign := ignore[s]; !ign {
 				if isURL {
 					s = strings.TrimPrefix(s, "+")
 				}
@@ -466,6 +458,16 @@ func checkVer(s string) (name, v string) {
 	// 	}
 	// }
 	// return s[:i], s[i+1:]
+}
+
+// ignore retursn true if token should be ignored
+func ignore(s string) bool {
+	switch s {
+	case "KHTML, like Gecko", "U", "compatible", "Mozilla", "WOW64":
+		return true
+	default:
+		return false
+	}
 }
 
 type property struct {
