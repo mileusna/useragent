@@ -579,7 +579,7 @@ func findVersion(s string) string {
 // findAndroidDevice in tokens
 func (p *properties) findAndroidDevice(startIndex int) string {
 	for i := startIndex; i < startIndex+1; i++ {
-		if len(p.list) > i {
+		if len(p.list) > i+1 {
 			dev := p.list[i+1].Key
 			if len(dev) == 2 || (len(dev) == 5 && dev[2] == '-') {
 				// probably langage tag (en-us etc..), ignore and continue loop
