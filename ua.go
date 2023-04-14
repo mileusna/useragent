@@ -15,16 +15,16 @@ type UserAgent struct {
 	OS        string
 	OSVersion string
 	Device    string
-	VersionNo struct {
-		Major int
-		Minor int
-		Patch int
-	}
-	OSVersionNo struct {
-		Major int
-		Minor int
-		Patch int
-	}
+	// VersionNo struct {
+	// 	Major int
+	// 	Minor int
+	// 	Patch int
+	// }
+	// OSVersionNo struct {
+	// 	Major int
+	// 	Minor int
+	// 	Patch int
+	// }
 	Mobile  bool
 	Tablet  bool
 	Desktop bool
