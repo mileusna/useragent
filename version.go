@@ -30,7 +30,6 @@ func parseVersion(ver string, verno *VersionNo) {
 			}
 		}
 	}
-	return
 }
 
 // VersionNoShort return version string in format <Major>.<Minor>
