@@ -78,6 +78,8 @@ var testTable = [][]string{
 	{"Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)", "Bingbot", "2.0", "bot", ""},                                                                                                                                    // old binbot
 	{"Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm) Chrome/100.0.0.0 Safari/537.36", "Bingbot", "2.0", "bot", ""},                                                               // new bingbot desktop
 	{"Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.1.0.0 Mobile Safari/537.36 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)", "Bingbot", "2.0", "bot", ua.Android}, // new bingbot mobile
+	{"Mozilla/5.0 (compatible; Yahoo Ad monitoring; https://help.yahoo.com/kb/yahoo-ad-monitoring-SLN24857.html)  tands-prod-eng.hlfs-prod---sieve.hlfs-desktop/1681336006-0", "Yahoo Ad monitoring", "", "bot", ""},
+	{"Mozilla/5.0 (compatible; Yahoo Ad monitoring; https://help.yahoo.com/kb/yahoo-ad-monitoring-SLN24857.html) cnv.aws-prod---sieve.hlfs-rest_client/1681346790-0", "Yahoo Ad monitoring", "", "bot", ""},
 
 	// Google ads bots
 	{"Mozilla/5.0 (Linux; Android 4.0.0; Galaxy Nexus Build/IMM76B) AppleWebKit/537.36 (KHTML, like Gecko; Mediapartners-Google) Chrome/104.0.0.0 Mobile Safari/537.36", ua.GoogleAdsBot, "", "bot", ua.Android},
@@ -116,6 +118,12 @@ var testTable = [][]string{
 	{"BUbiNG (+http://law.di.unimi.it/BUbiNG.html)", "BUbiNG", "", "", ""},
 	//{"Aweme 8.2.0 rv:82017 (iPhone6,2; iOS 12.4; zh_CN) Cronet", "Aweme", "", "", ""},
 
+	// New strings
+	{"Mozilla/5.0 (Linux; Android 10; 8092) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36", "Chrome", "112.0.0.0", "mobile", ua.Android},
+	{"Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/96.0.4664.54 Mobile DuckDuckGo/5 Safari/537.36", "Mobile DuckDuckGo", "5", "mobile", ua.Android},
+	{"Mozilla/5.0 (Linux; Android 6.0; VIVAX TABLET TPC-101 3G) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36", "Chrome", "106.0.0.0", "tablet", ua.Android},
+	{"Mozilla/5.0 (Linux; Android 8.1.0; 8068 Build/O11019) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.5563.116 Safari/537.36", "Chrome", "111.0.5563.116", "mobile", ua.Android},
+
 	//GooglePlus   "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36 Google (+https://developers.google.com/+/web/snippet/)"
 	//Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/600.2.5 (KHTML, like Gecko) Version/8.0.2 Safari/600.2.5 (Applebot/0.1; +http://www.apple.com/go/applebot)
 	//Mozilla/5.0 (Macintosh; Intel Mac OS Xt 10_11_4) AppleWebKit/537.36 (KHTML, like Gecko) QtWebEngine/5.6.0 Chrome/45.0.2454.101 Safari/537.36
@@ -127,6 +135,7 @@ func TestParse(t *testing.T) {
 		ua := ua.Parse(test[0])
 		if ua.Name != test[1] {
 			t.Error("\n", test[0], "\nName should be", test[1], "not", ua.Name)
+			fmt.Printf("%+v", ua)
 		}
 		if ua.Version != test[2] {
 			t.Error("\nVersion should be", test[2], "not", ua.Version)
@@ -139,9 +148,11 @@ func TestParse(t *testing.T) {
 
 			if test[3] == "mobile" && !ua.Mobile {
 				t.Error("\n", ua.String, "should be mobile")
+				fmt.Printf("%+v", ua)
 			}
 			if test[3] == "tablet" && !ua.Tablet {
 				t.Error("\n", ua.String, "should be tablet")
+				fmt.Printf("%+v", ua)
 			}
 		}
 

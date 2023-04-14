@@ -8,19 +8,30 @@ import (
 
 // UserAgent struct containing all data extracted from parsed user-agent string
 type UserAgent struct {
+	URL       string
+	String    string
 	Name      string
 	Version   string
 	OS        string
 	OSVersion string
 	Device    string
-	Mobile    bool
-	Tablet    bool
-	Desktop   bool
-	Bot       bool
-	URL       string
-	String    string
+	VersionNo struct {
+		Major int
+		Minor int
+		Patch int
+	}
+	OSVersionNo struct {
+		Major int
+		Minor int
+		Patch int
+	}
+	Mobile  bool
+	Tablet  bool
+	Desktop bool
+	Bot     bool
 }
 
+// TODO: turn to slice, check performance
 var ignore = map[string]struct{}{
 	"KHTML, like Gecko": {},
 	"U":                 {},
@@ -79,16 +90,21 @@ func Parse(userAgent string) UserAgent {
 		}
 	}
 
+	// fmt.Println()
+	// fmt.Println(tokens.list)
+
 	// OS lookup
 	switch {
 	case tokens.exists("Android"):
 		ua.OS = Android
 		ua.OSVersion = tokens.get(Android)
+		ua.Tablet = strings.Contains(strings.ToLower(ua.String), "tablet")
 		for _, token := range tokens.list {
 			s := token.Key
-			if strings.HasSuffix(s, "Build") {
+			if strings.HasPrefix(s, "Lenovo") || strings.HasPrefix(s, "SM-") || strings.HasPrefix(s, "AGS") || strings.HasPrefix(s, "Redmi") || strings.HasPrefix(s, "SAMSUNG") || strings.HasPrefix(s, "HUAWEI") || strings.HasPrefix(s, "Nokia ") || strings.HasPrefix(s, "Moto ") {
+				ua.Device = s
+			} else if strings.HasSuffix(s, "Build") {
 				ua.Device = strings.TrimSpace(s[:len(s)-5])
-				ua.Tablet = strings.Contains(strings.ToLower(ua.Device), "tablet")
 			}
 		}
 
@@ -242,6 +258,11 @@ func Parse(userAgent string) UserAgent {
 		ua.Bot = true
 		ua.Mobile = ua.IsAndroid() || ua.IsIOS()
 
+	case tokens.exists("Yahoo Ad monitoring"):
+		ua.Name = "Yahoo Ad monitoring"
+		ua.Bot = true
+		ua.Mobile = ua.IsAndroid() || ua.IsIOS()
+
 	case tokens.exists("XiaoMi"):
 		miui := tokens.get("XiaoMi")
 		if strings.HasPrefix(miui, "MiuiBrowser") {
@@ -317,12 +338,16 @@ func Parse(userAgent string) UserAgent {
 		}
 	}
 
+	if ua.IsAndroid() {
+		ua.Mobile = true
+	}
+
 	// if tablet, switch mobile to off
 	if ua.Tablet {
 		ua.Mobile = false
 	}
 
-	// if not already bot, check some popular bots and weather URL is set
+	// if not already bot, check some popular bots and wether URL is set
 	if !ua.Bot {
 		ua.Bot = ua.URL != ""
 	}
@@ -534,6 +559,10 @@ func (p properties) findBestMatch(withVerOnly bool) string {
 			switch prop.Key {
 			case Chrome, Firefox, Safari, "Version", "Mobile", "Mobile Safari", "Mozilla", "AppleWebKit", "Windows NT", "Windows Phone OS", Android, "Macintosh", Linux, "GSA", "CrOS":
 			default:
+				// don' pick if starts with number
+				if len(prop.Key) != 0 && prop.Key[0] >= 48 && prop.Key[0] <= 57 {
+					break
+				}
 				if i == 0 {
 					if prop.Value != "" { // in first check, only return keys with value
 						return prop.Key
