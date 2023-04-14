@@ -9,7 +9,7 @@ Use `useragent.Parse(userAgent string)` function to parse browser's and bot's us
 
 ## Status
 
-Still need some work on detecting Andorid device names.
+Stable. I constantly improve user agents detection and performance.
 
 Fill free to report an issue for any User-Agent string not recognized or misinterpreted.
 
