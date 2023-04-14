@@ -40,7 +40,7 @@ var testTable = [][]string{
 	{"Mozilla/5.0 (Linux; Android 4.3; GT-I9300 Build/JSS15J) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.125 Mobile Safari/537.36", ua.Chrome, "59.0.3071.125", "mobile", "Android", "GT-I9300"},
 	{"Mozilla/5.0 (Android 4.3; Mobile; rv:54.0) Gecko/54.0 Firefox/54.0", ua.Firefox, "54.0", "mobile", "Android"},
 	{"Mozilla/5.0 (Linux; Android 4.3; GT-I9300 Build/JSS15J) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.91 Mobile Safari/537.36 OPR/42.9.2246.119956", ua.Opera, "42.9.2246.119956", "mobile", ua.Android},
-	{"Opera/9.80 (Android; Opera Mini/28.0.2254/66.318; U; en) Presto/2.12.423 Version/12.16", ua.OperaMini, "28.0.2254/66.318", "mobile", "Android"},
+	{"Opera/9.80 (Android; Opera Mini/28.0.2254/66.318; U; en) Presto/2.12.423 Version/12.16", ua.OperaMini, "28.0.2254/66.318", "mobile", "Android", ""},
 	{"Mozilla/5.0 (Linux; U; Android 4.3; en-us; GT-I9300 Build/JSS15J) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30", "Android browser", "4.0", "mobile", "Android"},
 	{"Mozilla/5.0 (Linux; Android 10; ONEPLUS A6003) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.0 Mobile Safari/537.36 EdgA/44.11.4.4140", ua.Edge, "44.11.4.4140", "mobile", "Android", "ONEPLUS A6003"},
 
@@ -118,11 +118,17 @@ var testTable = [][]string{
 	{"BUbiNG (+http://law.di.unimi.it/BUbiNG.html)", "BUbiNG", "", "", ""},
 	//{"Aweme 8.2.0 rv:82017 (iPhone6,2; iOS 12.4; zh_CN) Cronet", "Aweme", "", "", ""},
 
-	// New strings
+	// Device names
 	{"Mozilla/5.0 (Linux; Android 10; 8092) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36", "Chrome", "112.0.0.0", "mobile", ua.Android, "8092"},
 	{"Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/96.0.4664.54 Mobile DuckDuckGo/5 Safari/537.36", "Mobile DuckDuckGo", "5", "mobile", ua.Android, ""},
-	{"Mozilla/5.0 (Linux; Android 6.0; VIVAX TABLET TPC-101 3G) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36", "Chrome", "106.0.0.0", "tablet", ua.Android, "VIVAX TABLET TPC-101 3G"},
-	{"Mozilla/5.0 (Linux; Android 8.1.0; 8068 Build/O11019) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.5563.116 Safari/537.36", "Chrome", "111.0.5563.116", "mobile", ua.Android, "8068"},
+	{"Mozilla/5.0 (Linux; Android 6.0; VIVAX TABLET TPC-101 3G) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36", ua.Chrome, "106.0.0.0", "tablet", ua.Android, "VIVAX TABLET TPC-101 3G"},
+	{"Mozilla/5.0 (Linux; Android 8.1.0; 8068 Build/O11019) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.5563.116 Safari/537.36", ua.Chrome, "111.0.5563.116", "mobile", ua.Android, "8068"},
+	{"Mozilla/5.0 (Linux; Android 8.1.0; Lenovo TB-7104F Build/O11019) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.5304.91 Safari/537.36", ua.Chrome, "107.0.5304.91", "mobile", ua.Android, "Lenovo TB-7104F"},
+	{"Mozilla/5.0 (Linux; Android 7.1.1; Lenovo TB-X304L Build/NMF26F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36", ua.Chrome, "56.0.2924.87", "mobile", ua.Android, "Lenovo TB-X304L"},
+	{"Mozilla/5.0 (Linux; Android 4.4.4; SM-T560 Build/KTU84P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.91 Safari/537.36", ua.Chrome, "68.0.3440.91", "mobile", ua.Android, "SM-T560"},
+	{"Mozilla/5.0 (Linux; Android 5.1; B3-A20 Build/LMY47I) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.89 Safari/537.36", ua.Chrome, "50.0.2661.89", "mobile", ua.Android, "B3-A20"},
+	{"Mozilla/5.0 (Linux; Android 11; TPC_8074G Build/RP1A.200720.011) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.5195.136 Safari/537.36", ua.Chrome, "105.0.5195.136", "mobile", ua.Android, "TPC_8074G"},
+	{"Mozilla/5.0 (Linux; Android 9; m5621 Build/PPR2.180905.006.A1; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/66.0.3359.158 Safari/537.36", ua.Chrome, "66.0.3359.158", "mobile", ua.Android, "m5621"},
 
 	//GooglePlus   "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36 Google (+https://developers.google.com/+/web/snippet/)"
 	//Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/600.2.5 (KHTML, like Gecko) Version/8.0.2 Safari/600.2.5 (Applebot/0.1; +http://www.apple.com/go/applebot)

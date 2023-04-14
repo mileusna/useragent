@@ -585,7 +585,7 @@ func findVersion(s string) string {
 }
 
 // findAndroidDevice in tokens
-func (p properties) findAndroidDevice(startIndex int) string {
+func (p *properties) findAndroidDevice(startIndex int) string {
 	for i := startIndex; i < startIndex+1; i++ {
 		if len(p.list) > i {
 			dev := p.list[i+1].Key
@@ -594,9 +594,10 @@ func (p properties) findAndroidDevice(startIndex int) string {
 				continue
 			}
 			switch dev {
-			case Chrome, Firefox, Safari, "Version", "Mobile", "Mobile Safari", "Mozilla", "AppleWebKit", "Windows NT", "Windows Phone OS", Android, "Macintosh", Linux, "CrOS":
+			case Chrome, Firefox, Safari, "Opera Mini", "Presto", "Version", "Mobile", "Mobile Safari", "Mozilla", "AppleWebKit", "Windows NT", "Windows Phone OS", Android, "Macintosh", Linux, "CrOS":
 				// ignore this tokens, not device names
 			default:
+				p.list = append(p.list[:i+1], p.list[i+2:]...)
 				return strings.TrimSpace(strings.TrimSuffix(dev, "Build"))
 			}
 		}
