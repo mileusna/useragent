@@ -171,7 +171,7 @@ func Parse(userAgent string) UserAgent {
 		ua.Name = Firefox
 		ua.Version = tokens.get(Firefox)
 		ua.Mobile = tokens.exists("Mobile")
-		ua.Tablet = strings.Contains(strings.ToLower(ua.String), "tablet")
+		ua.Tablet = tokens.exists("Tablet")
 
 	case tokens.get("Vivaldi") != "":
 		ua.Name = Vivaldi
@@ -489,6 +489,15 @@ func (p properties) exists(key string) bool {
 	return false
 }
 
+// func (p properties) existsIgnoreCase(key string) bool {
+// 	for _, prop := range p.list {
+// 		if strings.EqualFold(prop.Key, key) {
+// 			return true
+// 		}
+// 	}
+// 	return false
+// }
+
 func (p properties) existsAny(keys ...string) bool {
 	for _, k := range keys {
 		for _, prop := range p.list {
@@ -548,7 +557,7 @@ func (p properties) findBestMatch(withVerOnly bool) string {
 	for i := 0; i < n; i++ {
 		for _, prop := range p.list {
 			switch prop.Key {
-			case Chrome, Firefox, Safari, "Version", "Mobile", "Mobile Safari", "Mozilla", "AppleWebKit", "Windows NT", "Windows Phone OS", Android, "Macintosh", Linux, "GSA", "CrOS":
+			case Chrome, Firefox, Safari, "Version", "Mobile", "Mobile Safari", "Mozilla", "AppleWebKit", "Windows NT", "Windows Phone OS", Android, "Macintosh", Linux, "GSA", "CrOS", "Tablet":
 			default:
 				// don' pick if starts with number
 				if len(prop.Key) != 0 && prop.Key[0] >= 48 && prop.Key[0] <= 57 {
@@ -589,7 +598,11 @@ func (p *properties) findAndroidDevice(startIndex int) string {
 			case Chrome, Firefox, Safari, "Opera Mini", "Presto", "Version", "Mobile", "Mobile Safari", "Mozilla", "AppleWebKit", "Windows NT", "Windows Phone OS", Android, "Macintosh", Linux, "CrOS":
 				// ignore this tokens, not device names
 			default:
-				p.list = append(p.list[:i+1], p.list[i+2:]...)
+				if strings.Contains(strings.ToLower(dev), "tablet") {
+					p.list[i+1].Key = "Tablet" // leave Tablet tag for later table detection
+				} else {
+					p.list = append(p.list[:i+1], p.list[i+2:]...)
+				}
 				return strings.TrimSpace(strings.TrimSuffix(dev, "Build"))
 			}
 		}
