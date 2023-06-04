@@ -171,7 +171,7 @@ func Parse(userAgent string) UserAgent {
 		ua.Name = Firefox
 		ua.Version = tokens.get(Firefox)
 		ua.Mobile = tokens.exists("Mobile")
-		ua.Tablet = tokens.exists("Tablet")
+		ua.Tablet = strings.Contains(strings.ToLower(ua.String), "tablet")
 
 	case tokens.get("Vivaldi") != "":
 		ua.Name = Vivaldi
