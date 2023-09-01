@@ -32,6 +32,7 @@ const (
 	IOS          = "iOS"
 	Linux        = "Linux"
 	ChromeOS     = "ChromeOS"
+	BlackBerry   = "BlackBerry"
 
 	Opera            = "Opera"
 	OperaMini        = "Opera Mini"
@@ -118,6 +119,10 @@ func Parse(userAgent string) UserAgent {
 		ua.OS = ChromeOS
 		ua.OSVersion = tokens.get("CrOS")
 		ua.Desktop = true
+	case tokens.exists("BlackBerry"):
+		ua.OS = BlackBerry
+		ua.OSVersion = tokens.get("BlackBerry")
+		ua.Mobile = true
 	}
 
 	switch {
@@ -260,6 +265,10 @@ func Parse(userAgent string) UserAgent {
 		ua.Version = tokens.get("HuaweiBrowser")
 		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
 
+	case tokens.exists("BlackBerry"):
+		ua.Name = "BlackBerry"
+		ua.Version = tokens.get("Version")
+
 	// if chrome and Safari defined, find any other token sent descr
 	case tokens.exists(Chrome) && tokens.exists(Safari):
 		name := tokens.findBestMatch(true)
@@ -303,7 +312,10 @@ func Parse(userAgent string) UserAgent {
 				ua.Name = ua.String
 			}
 			ua.Bot = strings.Contains(strings.ToLower(ua.Name), "bot")
-			ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
+			// If mobile flag has already been set, don't override it.
+			if !ua.Mobile {
+				ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
+			}
 		}
 	}
 
@@ -390,6 +402,16 @@ func parse(userAgent string) properties {
 			addToken()
 			braOpen = false
 
+		case c == 58: // :
+			if bytes.HasSuffix(buff.Bytes(), []byte("http")) || bytes.HasSuffix(buff.Bytes(), []byte("https")) {
+				// If we are part of a URL just write the character.
+				buff.WriteByte(c)
+			} else if i != len(bua)-1 && bua[i+1] != ' ' {
+				// If the following character is not a space, change to a space.
+				buff.WriteByte(' ')
+			}
+			// Otherwise don't write as its probably a badly formatted key value separator.
+
 		case slash && c == 32:
 			addToken()
 
@@ -424,7 +446,7 @@ func checkVer(s string) (name, v string) {
 	switch s[:i] {
 	case "Linux", "Windows NT", "Windows Phone OS", "MSIE", "Android":
 		return s[:i], s[i+1:]
-	case "CrOS x86_64", "CrOS aarch64":
+	case "CrOS x86_64", "CrOS aarch64", "CrOS armv7l":
 		j := strings.LastIndex(s[:i], " ")
 		return s[:j], s[j+1 : i]
 	default:
