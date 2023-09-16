@@ -70,6 +70,9 @@ var testTable = [][]string{
 	// Windows phone
 	{"Mozilla/4.0 (compatible; MSIE 7.0; Windows Phone OS 7.0; Trident/3.1; IEMobile/7.0; NOKIA; Lumia 630)", ua.InternetExplorer, "7.0", "mobile", ua.WindowsPhone},
 
+	// FreeBSD
+	{"Mozilla/5.0 (compatible; Konqueror/4.5; FreeBSD) KHTML/4.5.4 (like Gecko)", "Konqueror", "4.5", "desktop", "FreeBSD"},
+
 	// Bots
 	{"Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.96 Mobile Safari/537.36 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)", ua.Googlebot, "2.1", "mobile", "Android", "Nexus 5X"},
 	{"Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)", ua.Googlebot, "2.1", "bot", ""},
@@ -131,6 +134,7 @@ var testTable = [][]string{
 	{"surveyon/2.9.5 (iPhone; CPU iPhone OS 12_5_7 like Mac OS X)", "surveyon", "2.9.5", "mobile", ua.IOS},
 	{"Mozilla/5.0 (BlackBerry; U; BlackBerry 9900; en-US) AppleWebKit/534.11+ (KHTML, like Gecko) Version/7.0.0.187 Mobile Safari/534.11+", "BlackBerry", "7.0.0.187", "mobile", "BlackBerry"},
 	{"Mozilla/5.0 (X11; CrOS armv7l 13099.110.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.136 Safari/537.36", ua.Chrome, "84.0.4147.136", "desktop", ua.ChromeOS},
+	{"SonyEricssonK310iv/R4DA Browser/NetFront/3.3 Profile/MIDP-2.0 Configuration/CLDC-1.1 UP.Link/6.3.1.13.0", "NetFront", "3.3", "mobile", ""},
 
 	// Device names
 	{"Mozilla/5.0 (Linux; Android 10; 8092) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36", "Chrome", "112.0.0.0", "mobile", ua.Android, "8092"},
@@ -204,6 +208,11 @@ func TestParse(t *testing.T) {
 		// fmt.Println(ua.Version, "==>", ua.VersionNoShort())
 
 	}
+}
+
+func TestSingle(t *testing.T) {
+	agent := ua.Parse("SonyEricssonK310iv/R4DA Browser/NetFront/3.3 Profile/MIDP-2.0 Configuration/CLDC-1.1 UP.Link/6.3.1.13.0")
+	fmt.Printf("\n%+v\n", agent)
 }
 
 var testUA ua.UserAgent

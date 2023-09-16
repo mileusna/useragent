@@ -31,6 +31,7 @@ const (
 	MacOS        = "macOS"
 	IOS          = "iOS"
 	Linux        = "Linux"
+	FreeBSD      = "FreeBSD"
 	ChromeOS     = "ChromeOS"
 	BlackBerry   = "BlackBerry"
 
@@ -74,6 +75,8 @@ func Parse(userAgent string) UserAgent {
 		}
 	}
 
+	//fmt.Printf("%+v\n", tokens)
+
 	// OS lookup
 	switch {
 	case tokens.exists("Android"):
@@ -113,6 +116,11 @@ func Parse(userAgent string) UserAgent {
 	case tokens.exists("Linux"):
 		ua.OS = Linux
 		ua.OSVersion = tokens.get(Linux)
+		ua.Desktop = true
+
+	case tokens.exists("FreeBSD"):
+		ua.OS = FreeBSD
+		ua.OSVersion = tokens.get(FreeBSD)
 		ua.Desktop = true
 
 	case tokens.exists("CrOS"):
@@ -277,6 +285,11 @@ func Parse(userAgent string) UserAgent {
 		ua.Name = "BlackBerry"
 		ua.Version = tokens.get("Version")
 
+	case tokens.exists("NetFront"):
+		ua.Name = "NetFront"
+		ua.Version = tokens.get("NetFront")
+		ua.Mobile = true
+
 	// if chrome and Safari defined, find any other token sent descr
 	case tokens.exists(Chrome) && tokens.exists(Safari):
 		name := tokens.findBestMatch(true)
@@ -434,7 +447,11 @@ func parse(userAgent string) properties {
 				buff.WriteByte(c)
 				isURL = true
 			} else {
-				slash = true
+				if ignore(buff.String()) {
+					buff.Reset()
+				} else {
+					slash = true
+				}
 			}
 
 		default:
@@ -476,7 +493,7 @@ func checkVer(s string) (name, v string) {
 // ignore retursn true if token should be ignored
 func ignore(s string) bool {
 	switch s {
-	case "KHTML, like Gecko", "U", "compatible", "Mozilla", "WOW64", "en", "en-us", "en-gb", "ru-ru":
+	case "KHTML, like Gecko", "U", "compatible", "Mozilla", "WOW64", "en", "en-us", "en-gb", "ru-ru", "Browser":
 		return true
 	default:
 		return false
