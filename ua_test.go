@@ -85,6 +85,8 @@ var testTable = [][]string{
 	{"Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.1.0.0 Mobile Safari/537.36 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)", "Bingbot", "2.0", "bot", ua.Android}, // new bingbot mobile
 	{"Mozilla/5.0 (compatible; Yahoo Ad monitoring; https://help.yahoo.com/kb/yahoo-ad-monitoring-SLN24857.html)  tands-prod-eng.hlfs-prod---sieve.hlfs-desktop/1681336006-0", "Yahoo Ad monitoring", "", "bot", ""},
 	{"Mozilla/5.0 (compatible; Yahoo Ad monitoring; https://help.yahoo.com/kb/yahoo-ad-monitoring-SLN24857.html) cnv.aws-prod---sieve.hlfs-rest_client/1681346790-0", "Yahoo Ad monitoring", "", "bot", ""},
+	{"GoogleProber", "GoogleProber", "", "bot", ""},
+	{"GoogleProducer; (+http://goo.gl/7y4SX)", "GoogleProducer", "", "bot", ""},
 
 	// Google ads bots
 	{"Mozilla/5.0 (Linux; Android 4.0.0; Galaxy Nexus Build/IMM76B) AppleWebKit/537.36 (KHTML, like Gecko; Mediapartners-Google) Chrome/104.0.0.0 Mobile Safari/537.36", ua.GoogleAdsBot, "", "bot", ua.Android},
@@ -272,7 +274,6 @@ func ExampleParse() {
 		if ua.URL != "" {
 			fmt.Println(ua.URL)
 		}
-
 	}
 
 }

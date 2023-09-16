@@ -119,6 +119,7 @@ func Parse(userAgent string) UserAgent {
 		ua.OS = ChromeOS
 		ua.OSVersion = tokens.get("CrOS")
 		ua.Desktop = true
+
 	case tokens.exists("BlackBerry"):
 		ua.OS = BlackBerry
 		ua.OSVersion = tokens.get("BlackBerry")
@@ -131,6 +132,12 @@ func Parse(userAgent string) UserAgent {
 		ua.Version = tokens.get(Googlebot)
 		ua.Bot = true
 		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
+
+	case tokens.existsAny("GoogleProber", "GoogleProducer"):
+		if name := tokens.findBestMatch(false); name != "" {
+			ua.Name = name
+		}
+		ua.Bot = true
 
 	case tokens.exists("Applebot"):
 		ua.Name = Applebot
@@ -248,6 +255,7 @@ func Parse(userAgent string) UserAgent {
 	case tokens.exists("FBAN"):
 		ua.Name = FacebookApp
 		ua.Version = tokens.get("FBAN")
+
 	case tokens.exists("FB_IAB"):
 		ua.Name = FacebookApp
 		ua.Version = tokens.get("FBAV")
@@ -389,6 +397,9 @@ func parse(userAgent string) properties {
 			parOpen = false
 
 		case (parOpen || braOpen) && c == 59: // ;
+			addToken()
+
+		case c == 59: // ;
 			addToken()
 
 		case c == 40: // (
