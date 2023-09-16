@@ -121,6 +121,12 @@ var testTable = [][]string{
 	// unstandard stuff
 	{"BUbiNG (+http://law.di.unimi.it/BUbiNG.html)", "BUbiNG", "", "", ""},
 	//{"Aweme 8.2.0 rv:82017 (iPhone6,2; iOS 12.4; zh_CN) Cronet", "Aweme", "", "", ""},
+	{"surveyon/3.1.0 Mobile (Android: 6.0.1; MODEL:SM-G532G; PRODUCT:grandppltedx; MANUFACTURER:samsung;)", "surveyon", "3.1.0", "mobile", ua.Android},
+	{"surveyon/3.1.0 Mobile (Android: 9; MODEL:CPH1923; PRODUCT:CPH1923; MANUFACTURER:OPPO;)", "surveyon", "3.1.0", "mobile", ua.Android},
+	{"surveyon/3.1.0 Mobile (Android: 13; MODEL:SM-M127F; PRODUCT:m12nnxx; MANUFACTURER:samsung;)", "surveyon", "3.1.0", "mobile", ua.Android},
+	{"surveyon/2.9.5 (iPhone; CPU iPhone OS 12_5_7 like Mac OS X)", "surveyon", "2.9.5", "mobile", ua.IOS},
+	{"Mozilla/5.0 (BlackBerry; U; BlackBerry 9900; en-US) AppleWebKit/534.11+ (KHTML, like Gecko) Version/7.0.0.187 Mobile Safari/534.11+", "BlackBerry", "7.0.0.187", "mobile", "BlackBerry"},
+	{"Mozilla/5.0 (X11; CrOS armv7l 13099.110.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.136 Safari/537.36", ua.Chrome, "84.0.4147.136", "desktop", ua.ChromeOS},
 
 	// Device names
 	{"Mozilla/5.0 (Linux; Android 10; 8092) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36", "Chrome", "112.0.0.0", "mobile", ua.Android, "8092"},
