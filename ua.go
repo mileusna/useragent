@@ -58,19 +58,46 @@ const (
 	TiktokApp    = "TikTok App"
 )
 
-// Parse user agent string returning UserAgent struct
+// Parses parses user agents.
+// It is not safe to use concurrently.
+type Parser struct {
+	tokens properties
+	buff   bytes.Buffer
+	val    bytes.Buffer
+}
+
+// New creates a user agent parser.
+func New() *Parser {
+	return &Parser{
+		tokens: properties{
+			list: make([]property, 0, 8),
+		},
+	}
+}
+
+// defaultParser is the default Parser used by Parse.
+var defaultParser = New()
+
+// Parse parses a user agent using the default parser.
+// It is not safe to use concurrently.
 func Parse(userAgent string) UserAgent {
+	return defaultParser.Parse(userAgent)
+}
+
+// Parse parses a user agent.
+// It is not safe to use concurrently.
+func (p *Parser) Parse(userAgent string) UserAgent {
 	ua := UserAgent{
 		String: userAgent,
 	}
 
-	tokens := parse(userAgent)
+	p.parse(userAgent)
 
 	// check is there URL
-	for i, token := range tokens.list {
+	for i, token := range p.tokens.list {
 		if strings.HasPrefix(token.Key, "http://") || strings.HasPrefix(token.Key, "https://") {
 			ua.URL = token.Key
-			tokens.list = append(tokens.list[:i], tokens.list[i+1:]...)
+			p.tokens.list = append(p.tokens.list[:i], p.tokens.list[i+1:]...)
 			break
 		}
 	}
@@ -79,263 +106,263 @@ func Parse(userAgent string) UserAgent {
 
 	// OS lookup
 	switch {
-	case tokens.exists("Android"):
+	case p.tokens.exists("Android"):
 		ua.OS = Android
 		var osIndex int
-		osIndex, ua.OSVersion = tokens.getIndexValue(Android)
+		osIndex, ua.OSVersion = p.tokens.getIndexValue(Android)
 		ua.Tablet = strings.Contains(strings.ToLower(ua.String), "tablet")
-		ua.Device = tokens.findAndroidDevice(osIndex)
+		ua.Device = p.tokens.findAndroidDevice(osIndex)
 
-	case tokens.exists("iPhone"):
+	case p.tokens.exists("iPhone"):
 		ua.OS = IOS
-		ua.OSVersion = tokens.findMacOSVersion()
+		ua.OSVersion = p.tokens.findMacOSVersion()
 		ua.Device = "iPhone"
 		ua.Mobile = true
 
-	case tokens.exists("iPad"):
+	case p.tokens.exists("iPad"):
 		ua.OS = IOS
-		ua.OSVersion = tokens.findMacOSVersion()
+		ua.OSVersion = p.tokens.findMacOSVersion()
 		ua.Device = "iPad"
 		ua.Tablet = true
 
-	case tokens.exists("Windows NT"):
+	case p.tokens.exists("Windows NT"):
 		ua.OS = Windows
-		ua.OSVersion = tokens.get("Windows NT")
+		ua.OSVersion = p.tokens.get("Windows NT")
 		ua.Desktop = true
 
-	case tokens.exists("Windows Phone OS"):
+	case p.tokens.exists("Windows Phone OS"):
 		ua.OS = WindowsPhone
-		ua.OSVersion = tokens.get("Windows Phone OS")
+		ua.OSVersion = p.tokens.get("Windows Phone OS")
 		ua.Mobile = true
 
-	case tokens.exists("Macintosh"):
+	case p.tokens.exists("Macintosh"):
 		ua.OS = MacOS
-		ua.OSVersion = tokens.findMacOSVersion()
+		ua.OSVersion = p.tokens.findMacOSVersion()
 		ua.Desktop = true
 
-	case tokens.exists("Linux"):
+	case p.tokens.exists("Linux"):
 		ua.OS = Linux
-		ua.OSVersion = tokens.get(Linux)
+		ua.OSVersion = p.tokens.get(Linux)
 		ua.Desktop = true
 
-	case tokens.exists("FreeBSD"):
+	case p.tokens.exists("FreeBSD"):
 		ua.OS = FreeBSD
-		ua.OSVersion = tokens.get(FreeBSD)
+		ua.OSVersion = p.tokens.get(FreeBSD)
 		ua.Desktop = true
 
-	case tokens.exists("CrOS"):
+	case p.tokens.exists("CrOS"):
 		ua.OS = ChromeOS
-		ua.OSVersion = tokens.get("CrOS")
+		ua.OSVersion = p.tokens.get("CrOS")
 		ua.Desktop = true
 
-	case tokens.exists("BlackBerry"):
+	case p.tokens.exists("BlackBerry"):
 		ua.OS = BlackBerry
-		ua.OSVersion = tokens.get("BlackBerry")
+		ua.OSVersion = p.tokens.get("BlackBerry")
 		ua.Mobile = true
 	}
 
 	switch {
-	case tokens.exists("Googlebot"):
+	case p.tokens.exists("Googlebot"):
 		ua.Name = Googlebot
-		ua.Version = tokens.get(Googlebot)
+		ua.Version = p.tokens.get(Googlebot)
 		ua.Bot = true
-		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
+		ua.Mobile = p.tokens.existsAny("Mobile", "Mobile Safari")
 
-	case tokens.existsAny("GoogleProber", "GoogleProducer"):
-		if name := tokens.findBestMatch(false); name != "" {
+	case p.tokens.existsAny("GoogleProber", "GoogleProducer"):
+		if name := p.tokens.findBestMatch(false); name != "" {
 			ua.Name = name
 		}
 		ua.Bot = true
 
-	case tokens.exists("Applebot"):
+	case p.tokens.exists("Applebot"):
 		ua.Name = Applebot
-		ua.Version = tokens.get(Applebot)
+		ua.Version = p.tokens.get(Applebot)
 		ua.Bot = true
-		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
+		ua.Mobile = p.tokens.existsAny("Mobile", "Mobile Safari")
 		ua.OS = ""
 
-	case tokens.get("Opera Mini") != "":
+	case p.tokens.get("Opera Mini") != "":
 		ua.Name = OperaMini
-		ua.Version = tokens.get(OperaMini)
+		ua.Version = p.tokens.get(OperaMini)
 		ua.Mobile = true
 
-	case tokens.get("OPR") != "":
+	case p.tokens.get("OPR") != "":
 		ua.Name = Opera
-		ua.Version = tokens.get("OPR")
-		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
+		ua.Version = p.tokens.get("OPR")
+		ua.Mobile = p.tokens.existsAny("Mobile", "Mobile Safari")
 
-	case tokens.get("OPT") != "":
+	case p.tokens.get("OPT") != "":
 		ua.Name = OperaTouch
-		ua.Version = tokens.get("OPT")
-		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
+		ua.Version = p.tokens.get("OPT")
+		ua.Mobile = p.tokens.existsAny("Mobile", "Mobile Safari")
 
 	// Opera on iOS
-	case tokens.get("OPiOS") != "":
+	case p.tokens.get("OPiOS") != "":
 		ua.Name = Opera
-		ua.Version = tokens.get("OPiOS")
-		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
+		ua.Version = p.tokens.get("OPiOS")
+		ua.Mobile = p.tokens.existsAny("Mobile", "Mobile Safari")
 
 	// Chrome on iOS
-	case tokens.get("CriOS") != "":
+	case p.tokens.get("CriOS") != "":
 		ua.Name = Chrome
-		ua.Version = tokens.get("CriOS")
-		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
+		ua.Version = p.tokens.get("CriOS")
+		ua.Mobile = p.tokens.existsAny("Mobile", "Mobile Safari")
 
 	// Firefox on iOS
-	case tokens.get("FxiOS") != "":
+	case p.tokens.get("FxiOS") != "":
 		ua.Name = Firefox
-		ua.Version = tokens.get("FxiOS")
-		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
+		ua.Version = p.tokens.get("FxiOS")
+		ua.Mobile = p.tokens.existsAny("Mobile", "Mobile Safari")
 
-	case tokens.get("Firefox") != "":
+	case p.tokens.get("Firefox") != "":
 		ua.Name = Firefox
-		ua.Version = tokens.get(Firefox)
-		ua.Mobile = tokens.exists("Mobile")
-		ua.Tablet = tokens.exists("Tablet")
+		ua.Version = p.tokens.get(Firefox)
+		ua.Mobile = p.tokens.exists("Mobile")
+		ua.Tablet = p.tokens.exists("Tablet")
 
-	case tokens.get("Vivaldi") != "":
+	case p.tokens.get("Vivaldi") != "":
 		ua.Name = Vivaldi
-		ua.Version = tokens.get(Vivaldi)
+		ua.Version = p.tokens.get(Vivaldi)
 
-	case tokens.exists("MSIE"):
+	case p.tokens.exists("MSIE"):
 		ua.Name = InternetExplorer
-		ua.Version = tokens.get("MSIE")
+		ua.Version = p.tokens.get("MSIE")
 
-	case tokens.get("EdgiOS") != "":
+	case p.tokens.get("EdgiOS") != "":
 		ua.Name = Edge
-		ua.Version = tokens.get("EdgiOS")
-		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
+		ua.Version = p.tokens.get("EdgiOS")
+		ua.Mobile = p.tokens.existsAny("Mobile", "Mobile Safari")
 
-	case tokens.get("Edge") != "":
+	case p.tokens.get("Edge") != "":
 		ua.Name = Edge
-		ua.Version = tokens.get("Edge")
-		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
+		ua.Version = p.tokens.get("Edge")
+		ua.Mobile = p.tokens.existsAny("Mobile", "Mobile Safari")
 
-	case tokens.get("Edg") != "":
+	case p.tokens.get("Edg") != "":
 		ua.Name = Edge
-		ua.Version = tokens.get("Edg")
-		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
+		ua.Version = p.tokens.get("Edg")
+		ua.Mobile = p.tokens.existsAny("Mobile", "Mobile Safari")
 
-	case tokens.get("EdgA") != "":
+	case p.tokens.get("EdgA") != "":
 		ua.Name = Edge
-		ua.Version = tokens.get("EdgA")
-		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
+		ua.Version = p.tokens.get("EdgA")
+		ua.Mobile = p.tokens.existsAny("Mobile", "Mobile Safari")
 
-	case tokens.get("bingbot") != "":
+	case p.tokens.get("bingbot") != "":
 		ua.Name = Bingbot
-		ua.Version = tokens.get("bingbot")
-		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
+		ua.Version = p.tokens.get("bingbot")
+		ua.Mobile = p.tokens.existsAny("Mobile", "Mobile Safari")
 
-	case tokens.get("YandexBot") != "":
+	case p.tokens.get("YandexBot") != "":
 		ua.Name = "YandexBot"
-		ua.Version = tokens.get("YandexBot")
-		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
+		ua.Version = p.tokens.get("YandexBot")
+		ua.Mobile = p.tokens.existsAny("Mobile", "Mobile Safari")
 
-	case tokens.get("SamsungBrowser") != "":
+	case p.tokens.get("SamsungBrowser") != "":
 		ua.Name = "Samsung Browser"
-		ua.Version = tokens.get("SamsungBrowser")
-		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
+		ua.Version = p.tokens.get("SamsungBrowser")
+		ua.Mobile = p.tokens.existsAny("Mobile", "Mobile Safari")
 
-	case tokens.get("HeadlessChrome") != "":
+	case p.tokens.get("HeadlessChrome") != "":
 		ua.Name = HeadlessChrome
-		ua.Version = tokens.get("HeadlessChrome")
-		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
+		ua.Version = p.tokens.get("HeadlessChrome")
+		ua.Mobile = p.tokens.existsAny("Mobile", "Mobile Safari")
 		ua.Bot = true
 
-	case tokens.existsAny("AdsBot-Google-Mobile", "Mediapartners-Google", "AdsBot-Google"):
+	case p.tokens.existsAny("AdsBot-Google-Mobile", "Mediapartners-Google", "AdsBot-Google"):
 		ua.Name = GoogleAdsBot
 		ua.Bot = true
 		ua.Mobile = ua.IsAndroid() || ua.IsIOS()
 
-	case tokens.exists("Yahoo Ad monitoring"):
+	case p.tokens.exists("Yahoo Ad monitoring"):
 		ua.Name = "Yahoo Ad monitoring"
 		ua.Bot = true
 		ua.Mobile = ua.IsAndroid() || ua.IsIOS()
 
-	case tokens.exists("XiaoMi"):
-		miui := tokens.get("XiaoMi")
+	case p.tokens.exists("XiaoMi"):
+		miui := p.tokens.get("XiaoMi")
 		if strings.HasPrefix(miui, "MiuiBrowser") {
 			ua.Name = "Miui Browser"
 			ua.Version = strings.TrimPrefix(miui, "MiuiBrowser/")
 			ua.Mobile = true
 		}
 
-	case tokens.exists("FBAN"):
+	case p.tokens.exists("FBAN"):
 		ua.Name = FacebookApp
-		ua.Version = tokens.get("FBAN")
+		ua.Version = p.tokens.get("FBAN")
 
-	case tokens.exists("FB_IAB"):
+	case p.tokens.exists("FB_IAB"):
 		ua.Name = FacebookApp
-		ua.Version = tokens.get("FBAV")
+		ua.Version = p.tokens.get("FBAV")
 
-	case tokens.startsWith("Instagram"):
+	case p.tokens.startsWith("Instagram"):
 		ua.Name = InstagramApp
-		ua.Version = tokens.findInstagramVersion()
+		ua.Version = p.tokens.findInstagramVersion()
 
-	case tokens.exists("BytedanceWebview"):
+	case p.tokens.exists("BytedanceWebview"):
 		ua.Name = TiktokApp
-		ua.Version = tokens.get("app_version")
+		ua.Version = p.tokens.get("app_version")
 
-	case tokens.get("HuaweiBrowser") != "":
+	case p.tokens.get("HuaweiBrowser") != "":
 		ua.Name = "Huawei Browser"
-		ua.Version = tokens.get("HuaweiBrowser")
-		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
+		ua.Version = p.tokens.get("HuaweiBrowser")
+		ua.Mobile = p.tokens.existsAny("Mobile", "Mobile Safari")
 
-	case tokens.exists("BlackBerry"):
+	case p.tokens.exists("BlackBerry"):
 		ua.Name = "BlackBerry"
-		ua.Version = tokens.get("Version")
+		ua.Version = p.tokens.get("Version")
 
-	case tokens.exists("NetFront"):
+	case p.tokens.exists("NetFront"):
 		ua.Name = "NetFront"
-		ua.Version = tokens.get("NetFront")
+		ua.Version = p.tokens.get("NetFront")
 		ua.Mobile = true
 
 	// if chrome and Safari defined, find any other token sent descr
-	case tokens.exists(Chrome) && tokens.exists(Safari):
-		name := tokens.findBestMatch(true)
+	case p.tokens.exists(Chrome) && p.tokens.exists(Safari):
+		name := p.tokens.findBestMatch(true)
 		if name != "" {
 			ua.Name = name
-			ua.Version = tokens.get(name)
+			ua.Version = p.tokens.get(name)
 			break
 		}
 		fallthrough
 
-	case tokens.exists("Chrome"):
+	case p.tokens.exists("Chrome"):
 		ua.Name = Chrome
-		ua.Version = tokens.get("Chrome")
-		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
+		ua.Version = p.tokens.get("Chrome")
+		ua.Mobile = p.tokens.existsAny("Mobile", "Mobile Safari")
 
-	case tokens.exists("Brave Chrome"):
+	case p.tokens.exists("Brave Chrome"):
 		ua.Name = Chrome
-		ua.Version = tokens.get("Brave Chrome")
-		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
+		ua.Version = p.tokens.get("Brave Chrome")
+		ua.Mobile = p.tokens.existsAny("Mobile", "Mobile Safari")
 
-	case tokens.exists("Safari"):
+	case p.tokens.exists("Safari"):
 		ua.Name = Safari
-		v := tokens.get("Version")
+		v := p.tokens.get("Version")
 		if v != "" {
 			ua.Version = v
 		} else {
-			ua.Version = tokens.get("Safari")
+			ua.Version = p.tokens.get("Safari")
 		}
-		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
+		ua.Mobile = p.tokens.existsAny("Mobile", "Mobile Safari")
 
 	default:
-		if ua.OS == "Android" && tokens.get("Version") != "" {
+		if ua.OS == "Android" && p.tokens.get("Version") != "" {
 			ua.Name = "Android browser"
-			ua.Version = tokens.get("Version")
+			ua.Version = p.tokens.get("Version")
 			ua.Mobile = true
 		} else {
-			if name := tokens.findBestMatch(false); name != "" {
+			if name := p.tokens.findBestMatch(false); name != "" {
 				ua.Name = name
-				ua.Version = tokens.get(name)
+				ua.Version = p.tokens.get(name)
 			} else {
 				ua.Name = ua.String
 			}
 			ua.Bot = strings.Contains(strings.ToLower(ua.Name), "bot")
 			// If mobile flag has already been set, don't override it.
 			if !ua.Mobile {
-				ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
+				ua.Mobile = p.tokens.existsAny("Mobile", "Mobile Safari")
 			}
 		}
 	}
@@ -367,32 +394,33 @@ func Parse(userAgent string) UserAgent {
 	return ua
 }
 
-func parse(userAgent string) properties {
-	clients := properties{
-		list: make([]property, 0, 8),
-	}
+func (p *Parser) parse(userAgent string) {
+	p.tokens.list = p.tokens.list[:0]
+
+	p.buff.Reset()
+	p.val.Reset()
 	slash := false
 	isURL := false
-	var buff, val bytes.Buffer
+
 	addToken := func() {
-		if buff.Len() != 0 {
-			s := strings.TrimSpace(buff.String())
+		if p.buff.Len() != 0 {
+			s := strings.TrimSpace(p.buff.String())
 			if !ignore(s) {
 				if isURL {
 					s = strings.TrimPrefix(s, "+")
 				}
 
-				if val.Len() == 0 { // only if value don't exists
+				if p.val.Len() == 0 { // only if value don't exists
 					var ver string
 					s, ver = checkVer(s) // determin version string and split
-					clients.add(s, ver)
+					p.tokens.add(s, ver)
 				} else {
-					clients.add(s, strings.TrimSpace(val.String()))
+					p.tokens.add(s, strings.TrimSpace(p.val.String()))
 				}
 			}
 		}
-		buff.Reset()
-		val.Reset()
+		p.buff.Reset()
+		p.val.Reset()
 		slash = false
 		isURL = false
 	}
@@ -427,12 +455,12 @@ func parse(userAgent string) properties {
 			braOpen = false
 
 		case c == 58: // :
-			if bytes.HasSuffix(buff.Bytes(), []byte("http")) || bytes.HasSuffix(buff.Bytes(), []byte("https")) {
+			if bytes.HasSuffix(p.buff.Bytes(), []byte("http")) || bytes.HasSuffix(p.buff.Bytes(), []byte("https")) {
 				// If we are part of a URL just write the character.
-				buff.WriteByte(c)
+				p.buff.WriteByte(c)
 			} else if i != len(bua)-1 && bua[i+1] != ' ' {
 				// If the following character is not a space, change to a space.
-				buff.WriteByte(' ')
+				p.buff.WriteByte(' ')
 			}
 			// Otherwise don't write as its probably a badly formatted key value separator.
 
@@ -440,27 +468,25 @@ func parse(userAgent string) properties {
 			addToken()
 
 		case slash:
-			val.WriteByte(c)
+			p.val.WriteByte(c)
 
 		case c == 47 && !isURL: //   /
-			if i != len(bua)-1 && bua[i+1] == 47 && (bytes.HasSuffix(buff.Bytes(), []byte("http:")) || bytes.HasSuffix(buff.Bytes(), []byte("https:"))) {
-				buff.WriteByte(c)
+			if i != len(bua)-1 && bua[i+1] == 47 && (bytes.HasSuffix(p.buff.Bytes(), []byte("http:")) || bytes.HasSuffix(p.buff.Bytes(), []byte("https:"))) {
+				p.buff.WriteByte(c)
 				isURL = true
 			} else {
-				if ignore(buff.String()) {
-					buff.Reset()
+				if ignore(p.buff.String()) {
+					p.buff.Reset()
 				} else {
 					slash = true
 				}
 			}
 
 		default:
-			buff.WriteByte(c)
+			p.buff.WriteByte(c)
 		}
 	}
 	addToken()
-
-	return clients
 }
 
 func checkVer(s string) (name, v string) {
@@ -512,7 +538,7 @@ func (p *properties) add(key, value string) {
 	p.list = append(p.list, property{Key: key, Value: value})
 }
 
-func (p properties) get(key string) string {
+func (p *properties) get(key string) string {
 	for _, prop := range p.list {
 		if prop.Key == key {
 			return prop.Value
@@ -521,7 +547,7 @@ func (p properties) get(key string) string {
 	return ""
 }
 
-func (p properties) getIndexValue(key string) (int, string) {
+func (p *properties) getIndexValue(key string) (int, string) {
 	for i, prop := range p.list {
 		if prop.Key == key {
 			return i, prop.Value
@@ -530,7 +556,7 @@ func (p properties) getIndexValue(key string) (int, string) {
 	return -1, ""
 }
 
-func (p properties) exists(key string) bool {
+func (p *properties) exists(key string) bool {
 	for _, prop := range p.list {
 		if prop.Key == key {
 			return true
@@ -539,7 +565,7 @@ func (p properties) exists(key string) bool {
 	return false
 }
 
-// func (p properties) existsIgnoreCase(key string) bool {
+// func (p *properties) existsIgnoreCase(key string) bool {
 // 	for _, prop := range p.list {
 // 		if strings.EqualFold(prop.Key, key) {
 // 			return true
@@ -548,7 +574,7 @@ func (p properties) exists(key string) bool {
 // 	return false
 // }
 
-func (p properties) existsAny(keys ...string) bool {
+func (p *properties) existsAny(keys ...string) bool {
 	for _, k := range keys {
 		for _, prop := range p.list {
 			if prop.Key == k {
@@ -559,7 +585,7 @@ func (p properties) existsAny(keys ...string) bool {
 	return false
 }
 
-func (p properties) findMacOSVersion() string {
+func (p *properties) findMacOSVersion() string {
 	for _, token := range p.list {
 		if strings.Contains(token.Key, "OS") {
 			if ver := findVersion(token.Value); ver != "" {
@@ -573,7 +599,7 @@ func (p properties) findMacOSVersion() string {
 	return ""
 }
 
-func (p properties) startsWith(value string) bool {
+func (p *properties) startsWith(value string) bool {
 	for _, prop := range p.list {
 		if strings.HasPrefix(prop.Key, value) {
 			return true
@@ -582,7 +608,7 @@ func (p properties) startsWith(value string) bool {
 	return false
 }
 
-func (p properties) findInstagramVersion() string {
+func (p *properties) findInstagramVersion() string {
 	for _, token := range p.list {
 		if strings.HasPrefix(token.Key, "Instagram") {
 			if ver := findVersion(token.Value); ver != "" {
@@ -599,7 +625,7 @@ func (p properties) findInstagramVersion() string {
 // findBestMatch from the rest of the bunch
 // in first cycle only return key with version value
 // if withVerValue is false, do another cycle and return any token
-func (p properties) findBestMatch(withVerOnly bool) string {
+func (p *properties) findBestMatch(withVerOnly bool) string {
 	n := 2
 	if withVerOnly {
 		n = 1
