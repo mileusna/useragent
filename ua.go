@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"regexp"
 	"strings"
+	"sync"
 )
 
 // UserAgent struct containing all data extracted from parsed user-agent string
@@ -58,13 +59,48 @@ const (
 	TiktokApp    = "TikTok App"
 )
 
-// Parse user agent string returning UserAgent struct
+// Parses parses user agents.
+// It is safe to use concurrently.
+type Parser struct {
+	buf    sync.Pool
+	tokens sync.Pool
+}
+
+// New creates a user agent parser.
+func New() *Parser {
+	return &Parser{
+		buf: sync.Pool{New: func() interface{} {
+			return &bytes.Buffer{}
+		}},
+		tokens: sync.Pool{New: func() interface{} {
+			return &properties{
+				list: make([]property, 0, 8),
+			}
+		}},
+	}
+}
+
+// defaultParser is the default Parser used by Parse.
+var defaultParser = New()
+
+// Parse parses a user agent using the default parser.
+// It is safe to use concurrently.
 func Parse(userAgent string) UserAgent {
+	return defaultParser.Parse(userAgent)
+}
+
+// Parse parses a user agent.
+// It is safe to use concurrently.
+func (p *Parser) Parse(userAgent string) UserAgent {
 	ua := UserAgent{
 		String: userAgent,
 	}
 
-	tokens := parse(userAgent)
+	tokens := p.tokens.Get().(*properties)
+	defer p.tokens.Put(tokens)
+	tokens.list = tokens.list[:0]
+
+	p.parse(userAgent, tokens)
 
 	// check is there URL
 	for i, token := range tokens.list {
@@ -367,13 +403,18 @@ func Parse(userAgent string) UserAgent {
 	return ua
 }
 
-func parse(userAgent string) properties {
-	clients := properties{
-		list: make([]property, 0, 8),
-	}
+func (p *Parser) parse(userAgent string, tokens *properties) {
+	buff := p.buf.Get().(*bytes.Buffer)
+	defer p.buf.Put(buff)
+	buff.Reset()
+
+	val := p.buf.Get().(*bytes.Buffer)
+	defer p.buf.Put(val)
+	val.Reset()
+
 	slash := false
 	isURL := false
-	var buff, val bytes.Buffer
+
 	addToken := func() {
 		if buff.Len() != 0 {
 			s := strings.TrimSpace(buff.String())
@@ -385,9 +426,9 @@ func parse(userAgent string) properties {
 				if val.Len() == 0 { // only if value don't exists
 					var ver string
 					s, ver = checkVer(s) // determin version string and split
-					clients.add(s, ver)
+					tokens.add(s, ver)
 				} else {
-					clients.add(s, strings.TrimSpace(val.String()))
+					tokens.add(s, strings.TrimSpace(val.String()))
 				}
 			}
 		}
@@ -459,8 +500,6 @@ func parse(userAgent string) properties {
 		}
 	}
 	addToken()
-
-	return clients
 }
 
 func checkVer(s string) (name, v string) {
@@ -512,7 +551,7 @@ func (p *properties) add(key, value string) {
 	p.list = append(p.list, property{Key: key, Value: value})
 }
 
-func (p properties) get(key string) string {
+func (p *properties) get(key string) string {
 	for _, prop := range p.list {
 		if prop.Key == key {
 			return prop.Value
@@ -521,7 +560,7 @@ func (p properties) get(key string) string {
 	return ""
 }
 
-func (p properties) getIndexValue(key string) (int, string) {
+func (p *properties) getIndexValue(key string) (int, string) {
 	for i, prop := range p.list {
 		if prop.Key == key {
 			return i, prop.Value
@@ -530,7 +569,7 @@ func (p properties) getIndexValue(key string) (int, string) {
 	return -1, ""
 }
 
-func (p properties) exists(key string) bool {
+func (p *properties) exists(key string) bool {
 	for _, prop := range p.list {
 		if prop.Key == key {
 			return true
@@ -539,7 +578,7 @@ func (p properties) exists(key string) bool {
 	return false
 }
 
-// func (p properties) existsIgnoreCase(key string) bool {
+// func (p *properties) existsIgnoreCase(key string) bool {
 // 	for _, prop := range p.list {
 // 		if strings.EqualFold(prop.Key, key) {
 // 			return true
@@ -548,7 +587,7 @@ func (p properties) exists(key string) bool {
 // 	return false
 // }
 
-func (p properties) existsAny(keys ...string) bool {
+func (p *properties) existsAny(keys ...string) bool {
 	for _, k := range keys {
 		for _, prop := range p.list {
 			if prop.Key == k {
@@ -559,7 +598,7 @@ func (p properties) existsAny(keys ...string) bool {
 	return false
 }
 
-func (p properties) findMacOSVersion() string {
+func (p *properties) findMacOSVersion() string {
 	for _, token := range p.list {
 		if strings.Contains(token.Key, "OS") {
 			if ver := findVersion(token.Value); ver != "" {
@@ -573,7 +612,7 @@ func (p properties) findMacOSVersion() string {
 	return ""
 }
 
-func (p properties) startsWith(value string) bool {
+func (p *properties) startsWith(value string) bool {
 	for _, prop := range p.list {
 		if strings.HasPrefix(prop.Key, value) {
 			return true
@@ -582,7 +621,7 @@ func (p properties) startsWith(value string) bool {
 	return false
 }
 
-func (p properties) findInstagramVersion() string {
+func (p *properties) findInstagramVersion() string {
 	for _, token := range p.list {
 		if strings.HasPrefix(token.Key, "Instagram") {
 			if ver := findVersion(token.Value); ver != "" {
@@ -599,7 +638,7 @@ func (p properties) findInstagramVersion() string {
 // findBestMatch from the rest of the bunch
 // in first cycle only return key with version value
 // if withVerValue is false, do another cycle and return any token
-func (p properties) findBestMatch(withVerOnly bool) string {
+func (p *properties) findBestMatch(withVerOnly bool) string {
 	n := 2
 	if withVerOnly {
 		n = 1
