@@ -90,6 +90,7 @@ var testTable = [][]string{
 	{"Mozilla/5.0 (compatible; Yahoo Ad monitoring; https://help.yahoo.com/kb/yahoo-ad-monitoring-SLN24857.html) cnv.aws-prod---sieve.hlfs-rest_client/1681346790-0", "Yahoo Ad monitoring", "", "bot", ""},
 	{"GoogleProber", "GoogleProber", "", "bot", ""},
 	{"GoogleProducer; (+http://goo.gl/7y4SX)", "GoogleProducer", "", "bot", ""},
+	{"Mozilla/5.0 (compatible; YandexAdNet/1.0; +http://yandex.com/bots) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.268", "YandexAdNet", "1.0", "bot", ""},
 
 	// Google ads bots
 	{"Mozilla/5.0 (Linux; Android 4.0.0; Galaxy Nexus Build/IMM76B) AppleWebKit/537.36 (KHTML, like Gecko; Mediapartners-Google) Chrome/104.0.0.0 Mobile Safari/537.36", ua.GoogleAdsBot, "", "bot", ua.Android},
