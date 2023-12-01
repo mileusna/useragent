@@ -7,9 +7,9 @@ import (
 )
 
 type VersionNo struct {
-	Major int
-	Minor int
-	Patch int
+	Major int `json:"major,omitempty"`
+	Minor int `json:"minor,omitempty"`
+	Patch int `json:"patch,omitempty"`
 }
 
 func parseVersion(ver string, verno *VersionNo) {

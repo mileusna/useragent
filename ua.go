@@ -8,19 +8,19 @@ import (
 
 // UserAgent struct containing all data extracted from parsed user-agent string
 type UserAgent struct {
-	VersionNo   VersionNo
-	OSVersionNo VersionNo
-	URL         string
-	String      string
-	Name        string
-	Version     string
-	OS          string
-	OSVersion   string
-	Device      string
-	Mobile      bool
-	Tablet      bool
-	Desktop     bool
-	Bot         bool
+	VersionNo   VersionNo `json:"version_no,omitempty"`
+	OSVersionNo VersionNo `json:"os_version_no,omitempty"`
+	URL         string    `json:"url,omitempty"`
+	String      string    `json:"string,omitempty"`
+	Name        string    `json:"name,omitempty"`
+	Version     string    `json:"version,omitempty"`
+	OS          string    `json:"os,omitempty"`
+	OSVersion   string    `json:"os_version,omitempty"`
+	Device      string    `json:"device,omitempty"`
+	Mobile      bool      `json:"mobile,omitempty"`
+	Tablet      bool      `json:"tablet,omitempty"`
+	Desktop     bool      `json:"desktop,omitempty"`
+	Bot         bool      `json:"bot,omitempty"`
 }
 
 // Constants for browsers and operating systems for easier comparison
