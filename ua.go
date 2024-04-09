@@ -28,7 +28,7 @@ const (
 	Windows      = "Windows"
 	WindowsPhone = "Windows Phone"
 	Android      = "Android"
-	MacOS        = "macOS"
+	MacOS        = "Mac OS X"
 	IOS          = "iOS"
 	Linux        = "Linux"
 	FreeBSD      = "FreeBSD"
