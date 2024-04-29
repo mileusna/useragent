@@ -147,6 +147,13 @@ func Parse(userAgent string) UserAgent {
 		}
 		ua.Bot = true
 
+	case tokens.existsAny("Bytespider", "Bytespider"):
+		if name := tokens.findBestMatch(false); name != "" {
+			ua.Name = name
+			ua.OS = ""
+		}
+		ua.Bot = true
+
 	case tokens.exists("Applebot"):
 		ua.Name = Applebot
 		ua.Version = tokens.get(Applebot)
