@@ -385,8 +385,8 @@ func Parse(userAgent string) UserAgent {
 		}
 	}
 
-	parseVersion(ua.Version, &ua.VersionNo)
-	parseVersion(ua.OSVersion, &ua.OSVersionNo)
+	ua.VersionNo = parseVersion(ua.Version)
+	ua.OSVersionNo = parseVersion(ua.OSVersion)
 
 	return ua
 }
