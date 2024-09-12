@@ -70,6 +70,8 @@ const (
 	Version = "Version"
 	Mobile  = "Mobile"
 	Tablet  = "Tablet"
+
+	tablet = "tablet"
 )
 
 // Parse user agent string returning UserAgent struct
@@ -95,7 +97,7 @@ func Parse(userAgent string) UserAgent {
 		ua.OS = Android
 		var osIndex int
 		osIndex, ua.OSVersion = tokens.getIndexValue(Android)
-		ua.Tablet = strings.Contains(strings.ToLower(ua.String), strings.ToLower(Tablet))
+		ua.Tablet = strings.Contains(strings.ToLower(ua.String), tablet)
 		ua.Device = tokens.findAndroidDevice(osIndex)
 
 	case tokens.exists("iPhone"):
@@ -672,7 +674,7 @@ func (p *properties) findAndroidDevice(startIndex int) string {
 			case Chrome, Firefox, Safari, OperaMini, "Presto", Version, Mobile, MobileSafari, Mozilla, "AppleWebKit", WindowsNT, WindowsPhoneOS, Android, "Macintosh", Linux, CrOS:
 				// ignore these tokens, not device names
 			default:
-				if strings.Contains(strings.ToLower(dev), strings.ToLower(Tablet)) {
+				if strings.Contains(strings.ToLower(dev), tablet) {
 					p.list[i+1].Key = Tablet // leave Tablet tag for later table detection
 				} else {
 					p.list = append(p.list[:i+1], p.list[i+2:]...)
