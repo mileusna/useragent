@@ -572,6 +572,17 @@ func (p properties) existsAny(keys ...string) bool {
 	return false
 }
 
+func (p properties) getAny(keys ...string) (key, value string) {
+	for _, k := range keys {
+		for _, prop := range p.list {
+			if prop.Key == k {
+				return prop.Key, prop.Value
+			}
+		}
+	}
+	return "", ""
+}
+
 func (p properties) findMacOSVersion() string {
 	for _, token := range p.list {
 		if strings.Contains(token.Key, "OS") {
