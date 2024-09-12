@@ -37,6 +37,7 @@ const (
 	ChromeOS       = "ChromeOS"
 	BlackBerry     = "BlackBerry"
 	CrOS           = "CrOS"
+	Harmony        = "Harmony"
 
 	Opera            = "Opera"
 	OperaMini        = "Opera Mini"
@@ -142,6 +143,11 @@ func Parse(userAgent string) UserAgent {
 	case tokens.exists(BlackBerry):
 		ua.OS = BlackBerry
 		ua.OSVersion = tokens.get(BlackBerry)
+		ua.Mobile = true
+
+	case tokens.exists("OpenHarmony"):
+		ua.OS = Harmony
+		ua.OSVersion = tokens.get("OpenHarmony")
 		ua.Mobile = true
 	}
 
@@ -487,7 +493,7 @@ func checkVer(s string) (name, v string) {
 	}
 
 	switch s[:i] {
-	case Linux, WindowsNT, WindowsPhoneOS, Msie, Android:
+	case Linux, WindowsNT, WindowsPhoneOS, Msie, Android, "OpenHarmony":
 		return s[:i], s[i+1:]
 	case "CrOS x86_64", "CrOS aarch64", "CrOS armv7l":
 		j := strings.LastIndex(s[:i], " ")
@@ -614,7 +620,7 @@ func (p properties) findBestMatch(withVerOnly bool) string {
 	for i := 0; i < n; i++ {
 		for _, prop := range p.list {
 			switch prop.Key {
-			case Chrome, Firefox, Safari, Version, Mobile, MobileSafari, Mozilla, "AppleWebKit", WindowsNT, WindowsPhoneOS, Android, "Macintosh", Linux, "GSA", CrOS, Tablet:
+			case Chrome, Firefox, Safari, Version, Mobile, MobileSafari, Mozilla, "AppleWebKit", WindowsNT, WindowsPhoneOS, Android, "Macintosh", Linux, "GSA", CrOS, Tablet, "OpenHarmony":
 			default:
 				// don't pick if starts with number
 				if len(prop.Key) != 0 && prop.Key[0] >= 48 && prop.Key[0] <= 57 {
