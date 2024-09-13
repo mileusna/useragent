@@ -80,7 +80,7 @@ func Parse(userAgent string) UserAgent {
 		String: userAgent,
 	}
 
-	tokens := parse(userAgent)
+	tokens := parse([]byte(userAgent))
 	ua.URL = tokens.url
 
 	// OS lookup
@@ -389,7 +389,7 @@ func Parse(userAgent string) UserAgent {
 // 	return bytes.NewBuffer(make([]byte, 0, 30))
 // }}
 
-func parse(userAgent string) properties {
+func parse(userAgent []byte) properties {
 	clients := properties{
 		list: make([]property, 0, 8),
 	}
@@ -428,8 +428,7 @@ func parse(userAgent string) properties {
 	parOpen := false
 	braOpen := false
 
-	bua := []byte(userAgent)
-	for i, c := range bua {
+	for i, c := range userAgent {
 		switch {
 		case c == 41: // )
 			addToken()
@@ -456,7 +455,7 @@ func parse(userAgent string) properties {
 			if bytes.HasSuffix(buff.Bytes(), []byte("http")) || bytes.HasSuffix(buff.Bytes(), []byte("https")) {
 				// If we are part of a URL just write the character.
 				buff.WriteByte(c)
-			} else if i != len(bua)-1 && bua[i+1] != ' ' {
+			} else if i != len(userAgent)-1 && userAgent[i+1] != ' ' {
 				// If the following character is not a space, change to a space.
 				buff.WriteByte(' ')
 			}
@@ -469,7 +468,7 @@ func parse(userAgent string) properties {
 			val.WriteByte(c)
 
 		case c == 47 && !isURL: //   /
-			if i != len(bua)-1 && bua[i+1] == 47 && (bytes.HasSuffix(buff.Bytes(), []byte("http:")) || bytes.HasSuffix(buff.Bytes(), []byte("https:"))) {
+			if i != len(userAgent)-1 && userAgent[i+1] == 47 && (bytes.HasSuffix(buff.Bytes(), []byte("http:")) || bytes.HasSuffix(buff.Bytes(), []byte("https:"))) {
 				buff.WriteByte(c)
 				isURL = true
 			} else {
