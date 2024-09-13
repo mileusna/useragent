@@ -419,8 +419,8 @@ func parse(userAgent string) properties {
 				}
 			}
 		}
-		//		buff.Reset()
-		//		val.Reset()
+		buff.Reset()
+		val.Reset()
 		slash = false
 		isURL = false
 	}
