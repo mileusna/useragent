@@ -90,10 +90,34 @@ can be also written on this way:
     }
 ```
 
-## Notice
+## Version parsing
 
-+ Opera and Opera Mini are two browsers, since they operate on very different ways.
+Since **v1.3.4**, the package also parses the version strings of the **Browser** and **OS** into the `VersionNo` struct. The raw version string from the user agent might look something like `100.0.4896.127`. Although this is the full version string, it may not be suitable for various checks you might need to perform in your web services.
+
+To address this, the version strings are parsed into their individual components. After parsing, you can easily check each segment of the version string (e.g., `Major`, `Minor`, `Patch`). For example:
+
+```go
+    if ua.IsChrome() && ua.VersionNo.Major < 100 {
+        log.Println("Error, browser is too old")
+    }
+```
+
+This also makes it easy to print prettified version strings in logs or other outputs. You can use the `VersionNoShort()` and `VersionNoFull()` functions for browsers, and `OSVersionNoShort()` and `OSVersionNoFull()` for the OS.
+
+```go
+    fmt.Println(ua.Name, ua.VersionNoShort())
+    fmt.Println(ua.Name, ua.VersionNoFull())
+    // output:
+    //  Chrome 100.0
+    //  Chrome 100.0.4896
+
+```
+
+## Notices
+
 + If Googlebot (or any other bot) is detected and it is using its mobile crawler, both `bot` and `mobile` flags will be set to `true`.
++ Opera and Opera Mini are two browsers, since they operate on very different ways.
++ This package uses a deterministic method to detect the user agent, even when the user agent string does not follow common formats. However, in some cases, the user agent string may contain very limited information, making it impossible for the package to accurately identify the user agent. In such cases, the function `IsUnknown()` will return `true`. Note, however, that struct fields such as Name, OS, and others might still contain partial values.
 
 
 
