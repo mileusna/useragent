@@ -53,6 +53,7 @@ const (
 	NetFront         = "NetFront"
 	Mozilla          = "Mozilla"
 	Msie             = "MSIE"
+	SamsungBrowser   = "Samsung Browser"
 
 	GoogleAdsBot        = "Google Ads Bot"
 	Googlebot           = "Googlebot"
@@ -250,9 +251,10 @@ func Parse(userAgent string) UserAgent {
 		ua.Bot = true
 
 	case tokens.get("SamsungBrowser") != "":
-		ua.Name = "Samsung Browser"
+		ua.Name = SamsungBrowser
 		ua.Version = tokens.get("SamsungBrowser")
 		ua.Mobile = tokens.existsAny(Mobile, MobileSafari)
+		ua.OS = Android
 
 	case tokens.get("HeadlessChrome") != "":
 		ua.Name = HeadlessChrome
