@@ -81,15 +81,7 @@ func Parse(userAgent string) UserAgent {
 	}
 
 	tokens := parse(userAgent)
-
-	// check is there URL
-	for i, token := range tokens.list {
-		if strings.HasPrefix(token.Key, "http://") || strings.HasPrefix(token.Key, "https://") {
-			ua.URL = token.Key
-			tokens.list = append(tokens.list[:i], tokens.list[i+1:]...)
-			break
-		}
-	}
+	ua.URL = tokens.url
 
 	// OS lookup
 	switch {
@@ -393,32 +385,42 @@ func Parse(userAgent string) UserAgent {
 	return ua
 }
 
+// var buffPool = sync.Pool{New: func() interface{} {
+// 	return bytes.NewBuffer(make([]byte, 0, 30))
+// }}
+
 func parse(userAgent string) properties {
 	clients := properties{
 		list: make([]property, 0, 8),
 	}
 	slash := false
 	isURL := false
-	var buff, val bytes.Buffer
+	// buff := buffPool.Get().(*bytes.Buffer)
+	// val := buffPool.Get().(*bytes.Buffer)
+	// buff.Reset()
+	// val.Reset()
+
+	buff := bytes.NewBuffer(make([]byte, 0, 30))
+	val := bytes.NewBuffer(make([]byte, 0, 30))
+
 	addToken := func() {
 		if buff.Len() != 0 {
-			s := strings.TrimSpace(buff.String())
+			s := string(bytes.TrimSpace(buff.Bytes()))
 			if !ignore(s) {
 				if isURL {
-					s = strings.TrimPrefix(s, "+")
+					clients.url = strings.TrimPrefix(s, "+")
+					return
 				}
-
-				if val.Len() == 0 { // only if value don't exists
-					var ver string
-					s, ver = checkVer(s) // determine version string and split
-					clients.add(s, ver)
+				if val.Len() == 0 {
+					// if value don't exists, try to get version from the token
+					clients.list = append(clients.list, checkVer(s))
 				} else {
-					clients.add(s, strings.TrimSpace(val.String()))
+					clients.list = append(clients.list, property{Key: s, Value: string(bytes.TrimSpace(val.Bytes()))})
 				}
 			}
 		}
-		buff.Reset()
-		val.Reset()
+		//		buff.Reset()
+		//		val.Reset()
 		slash = false
 		isURL = false
 	}
@@ -428,7 +430,6 @@ func parse(userAgent string) properties {
 
 	bua := []byte(userAgent)
 	for i, c := range bua {
-
 		switch {
 		case c == 41: // )
 			addToken()
@@ -485,23 +486,25 @@ func parse(userAgent string) properties {
 	}
 	addToken()
 
+	// buffPool.Put(buff)
+	// buffPool.Put(val)
 	return clients
 }
 
-func checkVer(s string) (name, v string) {
+func checkVer(s string) property {
 	i := strings.LastIndex(s, " ")
 	if i == -1 {
-		return s, ""
+		return property{Key: s, Value: ""}
 	}
 
 	switch s[:i] {
 	case Linux, WindowsNT, WindowsPhoneOS, Msie, Android, "OpenHarmony":
-		return s[:i], s[i+1:]
+		return property{Key: s[:i], Value: s[i+1:]}
 	case "CrOS x86_64", "CrOS aarch64", "CrOS armv7l":
 		j := strings.LastIndex(s[:i], " ")
-		return s[:j], s[j+1 : i]
+		return property{Key: s[:j], Value: s[j+1 : i]}
 	default:
-		return s, ""
+		return property{Key: s, Value: ""}
 	}
 }
 
@@ -521,10 +524,7 @@ type property struct {
 }
 type properties struct {
 	list []property
-}
-
-func (p *properties) add(key, value string) {
-	p.list = append(p.list, property{Key: key, Value: value})
+	url  string
 }
 
 func (p properties) get(key string) string {
