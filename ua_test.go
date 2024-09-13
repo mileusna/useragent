@@ -212,11 +212,6 @@ func TestParse(t *testing.T) {
 	}
 }
 
-func TestSingle(t *testing.T) {
-	agent := ua.Parse("SonyEricssonK310iv/R4DA Browser/NetFront/3.3 Profile/MIDP-2.0 Configuration/CLDC-1.1 UP.Link/6.3.1.13.0")
-	fmt.Printf("\n%+v\n", agent)
-}
-
 var testUA ua.UserAgent
 
 func BenchmarkUserAgent(b *testing.B) {
@@ -225,6 +220,11 @@ func BenchmarkUserAgent(b *testing.B) {
 			testUA = ua.Parse(test[0])
 		}
 	}
+}
+
+func TestSingle(t *testing.T) {
+	agent := ua.Parse("SonyEricssonK310iv/R4DA Browser/NetFront/3.3 Profile/MIDP-2.0 Configuration/CLDC-1.1 UP.Link/6.3.1.13.0")
+	fmt.Printf("\n%+v\n", agent)
 }
 
 func ExampleParse() {
