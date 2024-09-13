@@ -20,14 +20,14 @@ func parseVersion(ver string) (verno VersionNo) {
 		if verno.Major, err = strconv.Atoi(parts[0]); err != nil {
 			return verno
 		}
-	}
-	if len(parts) > 1 {
-		if verno.Minor, err = strconv.Atoi(parts[1]); err != nil {
-			return verno
-		}
-		if len(parts) > 2 {
-			if verno.Patch, err = strconv.Atoi(parts[2]); err != nil {
+		if len(parts) > 1 {
+			if verno.Minor, err = strconv.Atoi(parts[1]); err != nil {
 				return verno
+			}
+			if len(parts) > 2 {
+				if verno.Patch, err = strconv.Atoi(parts[2]); err != nil {
+					return verno
+				}
 			}
 		}
 	}
