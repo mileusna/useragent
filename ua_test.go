@@ -91,6 +91,8 @@ var testTable = [][]string{
 	{"Mozilla/5.0 (compatible; Yahoo Ad monitoring; https://help.yahoo.com/kb/yahoo-ad-monitoring-SLN24857.html) cnv.aws-prod---sieve.hlfs-rest_client/1681346790-0", "Yahoo Ad monitoring", "", "bot", ""},
 	{"GoogleProber", "GoogleProber", "", "bot", ""},
 	{"GoogleProducer; (+http://goo.gl/7y4SX)", "GoogleProducer", "", "bot", ""},
+	{"Mozilla/5.0 (compatible; Bytespider; spider-feedback@bytedance.com) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.0.0 Safari/537.36", "Bytespider", "", "bot", ""},
+	{"Mozilla/5.0 (Linux; Android 5.0) AppleWebKit/537.36 (KHTML, like Gecko) Mobile Safari/537.36 (compatible; Bytespider; spider-feedback@bytedance.com)", "Bytespider", "", "bot", ""},
 
 	// Google ads bots
 	{"Mozilla/5.0 (Linux; Android 4.0.0; Galaxy Nexus Build/IMM76B) AppleWebKit/537.36 (KHTML, like Gecko; Mediapartners-Google) Chrome/104.0.0.0 Mobile Safari/537.36", ua.GoogleAdsBot, "", "bot", ua.Android},
@@ -198,6 +200,10 @@ func TestParse(t *testing.T) {
 				t.Error("\n", ua.String, "should be tablet")
 				fmt.Printf("%+v", ua)
 			}
+			if test[3] == "bot" && !ua.Bot {
+				t.Error("\n", ua.String, "should be bot")
+				fmt.Printf("%+v", ua)
+			}
 		}
 
 		if len(test) > 4 && test[4] != ua.OS {
@@ -224,7 +230,8 @@ func BenchmarkUserAgent(b *testing.B) {
 }
 
 func TestSingle(t *testing.T) {
-	agent := ua.Parse("SonyEricssonK310iv/R4DA Browser/NetFront/3.3 Profile/MIDP-2.0 Configuration/CLDC-1.1 UP.Link/6.3.1.13.0")
+	//agent := ua.Parse("SonyEricssonK310iv/R4DA Browser/NetFront/3.3 Profile/MIDP-2.0 Configuration/CLDC-1.1 UP.Link/6.3.1.13.0")
+	agent := ua.Parse("Mozilla/5.0 (Linux; Android 5.0) AppleWebKit/537.36 (KHTML, like Gecko) Mobile Safari/537.36 (compatible; Bytespider; spider-feedback@bytedance.com)")
 	fmt.Printf("\n%+v\n", agent)
 }
 

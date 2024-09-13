@@ -159,6 +159,13 @@ func Parse(userAgent string) UserAgent {
 		}
 		ua.Bot = true
 
+	case tokens.existsAny("Bytespider", "Bytespider"):
+		if name := tokens.findBestMatch(false); name != "" {
+			ua.Name = name
+			ua.OS = ""
+		}
+		ua.Bot = true
+
 	case tokens.exists(Applebot):
 		ua.Name = Applebot
 		ua.Version = tokens.get(Applebot)
@@ -371,13 +378,11 @@ func Parse(userAgent string) UserAgent {
 
 	// if not already bot, check some popular bots and whether URL is set
 	if !ua.Bot {
-		ua.Bot = ua.URL != ""
-	}
-
-	if !ua.Bot {
 		switch ua.Name {
-		case Twitterbot, FacebookExternalHit:
+		case Twitterbot, FacebookExternalHit, "facebookcatalog":
 			ua.Bot = true
+		default:
+			ua.Bot = ua.URL != ""
 		}
 	}
 
