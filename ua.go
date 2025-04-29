@@ -506,7 +506,7 @@ func checkVer(s string) property {
 		return property{Key: s[:i], Value: s[i+1:]}
 	case "CrOS x86_64", "CrOS aarch64", "CrOS armv7l":
 		j := strings.LastIndex(s[:i], " ")
-		return property{Key: s[:j], Value: s[j+1 : i]}
+		return property{Key: s[:j], Value: s[i+1:]}
 	default:
 		return property{Key: s, Value: ""}
 	}
@@ -598,7 +598,6 @@ func (p properties) findMacOSVersion() string {
 				return ver
 			}
 		}
-
 	}
 	return ""
 }
@@ -621,7 +620,6 @@ func (p properties) findInstagramVersion() string {
 				return ver
 			}
 		}
-
 	}
 	return ""
 }

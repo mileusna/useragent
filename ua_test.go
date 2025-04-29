@@ -2,6 +2,7 @@ package useragent_test
 
 import (
 	"fmt"
+	"reflect"
 	"strings"
 	"testing"
 
@@ -106,11 +107,11 @@ var testTable = [][]string{
 	// HeadlessChrome
 	{"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/98.0.4758.0 Safari/537.36", ua.HeadlessChrome, "98.0.4758.0", "desktop", ua.Linux},
 
-	//FB App
+	// FB App
 	{"Mozilla/5.0 (iPhone; CPU iPhone OS 15_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/19E258 [FBAN/FBIOS;FBDV/iPhone8,2;FBMD/iPhone;FBSN/iOS;FBSV/15.4.1;FBSS/3;FBID/phone;FBLC/fr_FR;FBOP/5]", ua.FacebookApp, "FBIOS", "mobile", ua.IOS},
 	{"Mozilla/5.0 (Linux; Android 13; SM-T220 Build/TP1A.220624.014; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/109.0.5414.117 Safari/537.36 [FB_IAB/FB4A;FBAV/400.0.0.37.76;]", ua.FacebookApp, "400.0.0.37.76", "", ua.Android},
 
-	//Instagram
+	// Instagram
 	{"Mozilla/5.0 (iPhone; CPU iPhone OS 16_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 Instagram 270.0.0.13.83 (iPhone13,2; iOS 16_3; es_ES; es-ES; scale=3.00; 1170x2532; 445843881) NW/1", ua.InstagramApp, "270.0.0.13.83", "mobile", ua.IOS},
 
 	// Tiktok
@@ -170,9 +171,9 @@ var testTable = [][]string{
 	// Mozilla/5.0 (iPhone; CPU iPhone OS 15_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148
 	// Mozilla/5.0 (iPad; CPU OS 10_3_3 like Mac OS X) AppleWebKit/603.3.8 (KHTML, like Gecko) Mobile/14G60
 
-	//GooglePlus   "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36 Google (+https://developers.google.com/+/web/snippet/)"
-	//Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/600.2.5 (KHTML, like Gecko) Version/8.0.2 Safari/600.2.5 (Applebot/0.1; +http://www.apple.com/go/applebot)
-	//Mozilla/5.0 (Macintosh; Intel Mac OS Xt 10_11_4) AppleWebKit/537.36 (KHTML, like Gecko) QtWebEngine/5.6.0 Chrome/45.0.2454.101 Safari/537.36
+	// GooglePlus   "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36 Google (+https://developers.google.com/+/web/snippet/)"
+	// Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/600.2.5 (KHTML, like Gecko) Version/8.0.2 Safari/600.2.5 (Applebot/0.1; +http://www.apple.com/go/applebot)
+	// Mozilla/5.0 (Macintosh; Intel Mac OS Xt 10_11_4) AppleWebKit/537.36 (KHTML, like Gecko) QtWebEngine/5.6.0 Chrome/45.0.2454.101 Safari/537.36
 
 }
 
@@ -219,6 +220,149 @@ func TestParse(t *testing.T) {
 	}
 }
 
+func TestParseChromeOS(t *testing.T) {
+	tests := []struct {
+		input string
+		want  ua.UserAgent
+	}{
+		{
+			input: "Mozilla/5.0 (X11; CrOS x86_64 14150.74.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.114 Safari/537.36",
+			want: ua.UserAgent{
+				VersionNo:   ua.VersionNo{Major: 94, Minor: 0, Patch: 4606},
+				OSVersionNo: ua.VersionNo{Major: 14150, Minor: 74, Patch: 0},
+				URL:         "",
+				String:      "Mozilla/5.0 (X11; CrOS x86_64 14150.74.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.114 Safari/537.36",
+				Name:        ua.Chrome,
+				Version:     "94.0.4606.114",
+				OS:          ua.ChromeOS,
+				OSVersion:   "14150.74.0",
+				Device:      "",
+				Mobile:      false,
+				Tablet:      false,
+				Desktop:     true,
+				Bot:         false,
+			},
+		},
+		{
+			input: "Mozilla/5.0 (X11; CrOS armv7l 14388.62.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.107 Safari/537.36",
+			want: ua.UserAgent{
+				VersionNo:   ua.VersionNo{Major: 98, Minor: 0, Patch: 4758},
+				OSVersionNo: ua.VersionNo{Major: 14388, Minor: 62, Patch: 1},
+				URL:         "",
+				String:      "Mozilla/5.0 (X11; CrOS armv7l 14388.62.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.107 Safari/537.36",
+				Name:        ua.Chrome,
+				Version:     "98.0.4758.107",
+				OS:          ua.ChromeOS,
+				OSVersion:   "14388.62.1",
+				Device:      "",
+				Mobile:      false,
+				Tablet:      false,
+				Desktop:     true,
+				Bot:         false,
+			},
+		},
+		{
+			input: "Mozilla/5.0 (X11; CrOS armv7l 14388.62.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.107 Safari/537.36",
+			want: ua.UserAgent{
+				VersionNo:   ua.VersionNo{Major: 98, Minor: 0, Patch: 4758},
+				OSVersionNo: ua.VersionNo{Major: 14388, Minor: 62, Patch: 1},
+				URL:         "",
+				String:      "Mozilla/5.0 (X11; CrOS armv7l 14388.62.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.107 Safari/537.36",
+				Name:        ua.Chrome,
+				Version:     "98.0.4758.107",
+				OS:          ua.ChromeOS,
+				OSVersion:   "14388.62.1",
+				Device:      "",
+				Mobile:      false,
+				Tablet:      false,
+				Desktop:     true,
+				Bot:         false,
+			},
+		},
+		{
+			input: "Mozilla/5.0 (X11; CrOS x86_64 9460.60.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.91 Safari/537.36",
+			want: ua.UserAgent{
+				VersionNo:   ua.VersionNo{Major: 59, Minor: 0, Patch: 3071},
+				OSVersionNo: ua.VersionNo{Major: 9460, Minor: 60, Patch: 0},
+				URL:         "",
+				String:      "Mozilla/5.0 (X11; CrOS x86_64 9460.60.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.91 Safari/537.36",
+				Name:        ua.Chrome,
+				Version:     "59.0.3071.91",
+				OS:          ua.ChromeOS,
+				OSVersion:   "9460.60.0",
+				Device:      "",
+				Mobile:      false,
+				Tablet:      false,
+				Desktop:     true,
+				Bot:         false,
+			},
+		},
+		{
+			input: "Mozilla/5.0 (X11; CrOS x86_64 11151.113.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.127 Safari/537.36",
+			want: ua.UserAgent{
+				VersionNo:   ua.VersionNo{Major: 71, Minor: 0, Patch: 3578},
+				OSVersionNo: ua.VersionNo{Major: 11151, Minor: 113, Patch: 0},
+				URL:         "",
+				String:      "Mozilla/5.0 (X11; CrOS x86_64 11151.113.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.127 Safari/537.36",
+				Name:        ua.Chrome,
+				Version:     "71.0.3578.127",
+				OS:          ua.ChromeOS,
+				OSVersion:   "11151.113.0",
+				Device:      "",
+				Mobile:      false,
+				Tablet:      false,
+				Desktop:     true,
+				Bot:         false,
+			},
+		},
+		{
+			input: "Mozilla/5.0 (X11; CrOS x86_64 0.110.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3581.0 Safari/537.36",
+			want: ua.UserAgent{
+				VersionNo:   ua.VersionNo{Major: 72, Minor: 0, Patch: 3581},
+				OSVersionNo: ua.VersionNo{Major: 0, Minor: 110, Patch: 0},
+				URL:         "",
+				String:      "Mozilla/5.0 (X11; CrOS x86_64 0.110.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3581.0 Safari/537.36",
+				Name:        ua.Chrome,
+				Version:     "72.0.3581.0",
+				OS:          ua.ChromeOS,
+				OSVersion:   "0.110.0",
+				Device:      "",
+				Mobile:      false,
+				Tablet:      false,
+				Desktop:     true,
+				Bot:         false,
+			},
+		},
+		{
+			input: "Mozilla/5.0 (X11; CrOS x86_64 16209.59.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.7049.120 Safari/537.36",
+			want: ua.UserAgent{
+				VersionNo:   ua.VersionNo{Major: 135, Minor: 0, Patch: 7049},
+				OSVersionNo: ua.VersionNo{Major: 16209, Minor: 59, Patch: 0},
+				URL:         "",
+				String:      "Mozilla/5.0 (X11; CrOS x86_64 16209.59.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.7049.120 Safari/537.36",
+				Name:        ua.Chrome,
+				Version:     "135.0.7049.120",
+				OS:          ua.ChromeOS,
+				OSVersion:   "16209.59.0",
+				Device:      "",
+				Mobile:      false,
+				Tablet:      false,
+				Desktop:     true,
+				Bot:         false,
+			},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.input, func(t *testing.T) {
+			got := ua.Parse(test.input)
+			if !reflect.DeepEqual(got, test.want) {
+				t.Errorf("\nwant %+v\ngot  %+v", test.want, got)
+			}
+		})
+	}
+}
+
 var testUA ua.UserAgent
 
 func BenchmarkUserAgent(b *testing.B) {
@@ -230,7 +374,7 @@ func BenchmarkUserAgent(b *testing.B) {
 }
 
 func TestSingle(t *testing.T) {
-	//agent := ua.Parse("SonyEricssonK310iv/R4DA Browser/NetFront/3.3 Profile/MIDP-2.0 Configuration/CLDC-1.1 UP.Link/6.3.1.13.0")
+	// agent := ua.Parse("SonyEricssonK310iv/R4DA Browser/NetFront/3.3 Profile/MIDP-2.0 Configuration/CLDC-1.1 UP.Link/6.3.1.13.0")
 	agent := ua.Parse("Mozilla/5.0 (Linux; Android 5.0) AppleWebKit/537.36 (KHTML, like Gecko) Mobile Safari/537.36 (compatible; Bytespider; spider-feedback@bytedance.com)")
 	fmt.Printf("\n%+v\n", agent)
 }
@@ -297,5 +441,4 @@ func ExampleParse() {
 			fmt.Println(ua.URL)
 		}
 	}
-
 }
