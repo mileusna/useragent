@@ -315,6 +315,11 @@ func Parse(userAgent string) UserAgent {
 		ua.Version = tokens.get(NetFront)
 		ua.Mobile = true
 
+	case tokens.get("QQBrowser") != "":
+		ua.Name = "QQBrowser"
+		ua.Version = tokens.get("QQBrowser")
+		ua.Mobile = ua.IsAndroid() || ua.IsIOS()
+
 	// if Chrome and Safari defined, find any other token sent descr
 	case tokens.exists(Chrome) && tokens.exists(Safari):
 		name := tokens.findBestMatch(true)
