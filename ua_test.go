@@ -174,6 +174,13 @@ var testTable = [][]string{
 	//Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/600.2.5 (KHTML, like Gecko) Version/8.0.2 Safari/600.2.5 (Applebot/0.1; +http://www.apple.com/go/applebot)
 	//Mozilla/5.0 (Macintosh; Intel Mac OS Xt 10_11_4) AppleWebKit/537.36 (KHTML, like Gecko) QtWebEngine/5.6.0 Chrome/45.0.2454.101 Safari/537.36
 
+	{"Mozilla/5.0 (SmartHub; SMART-TV; U; Linux/SmartTV; Maple2012) AppleWebKit/534.7 (KHTML, like Gecko) SmartTV Safari/534.7", "SmartTV Safari", "534.7", "tv", ua.Linux},
+	{"Mozilla/5.0 (X11; U; Linux i686; en-US) AppleWebKit/533.4 (KHTML, like Gecko) Chrome/5.0.375.127 Large Screen Safari/533.4 GoogleTV/ 162671", ua.Chrome, "5.0.375.127", "tv", ua.Linux},
+	{"Mozilla/5.0 (Linux mips; U;HbbTV/1.1.1 (+RTSP;DMM;Dreambox;0.1a;1.0;) CE-HTML/1.0; en) AppleWebKit/535.19 no/Volksbox QtWebkit/2.2", "HbbTV", "1.1.1", "tv", ua.Linux},
+	{"Mozilla/5.0 (Linux; NetCast; U) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.79 Safari/537.36 SmartTV/10.0 Colt/2.0", "SmartTV", "10.0", "tv", ua.Linux},
+	{"Mozilla/5.0 (SMART-TV; LINUX; Tizen 5.0) AppleWebKit/537.36 (KHTML, like Gecko) Version/5.0 TV Safari/537.36", "TV Safari", "537.36", "tv", ua.Linux},
+	{"Mozilla/5.0 (SMART-TV; Linux; Tizen 4.0) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/2.1 Chrome/56.0.2924.0 TV Safari/537.36", ua.SamsungBrowser, "2.1", "tv", ua.Android},
+	{"Mozilla/5.0 (Web0S; Linux/SmartTV) AppleWebKit/537.41 (KHTML, like Gecko) Large Screen Safari/537.41 LG Browser/7.00.00(LGE; WEBOS1; 05.06.10; 1); webOS.TV-2014; LG NetCast.TV-2013 Compatible (LGE, WEBOS1, wireless)", ua.LgBrowser, "7.00.00", "tv", ua.Linux},
 }
 
 func TestParse(t *testing.T) {
@@ -202,6 +209,10 @@ func TestParse(t *testing.T) {
 			}
 			if test[3] == "bot" && !ua.Bot {
 				t.Error("\n", ua.String, "should be bot")
+				fmt.Printf("%+v", ua)
+			}
+			if test[3] == "tv" && !ua.TV {
+				t.Error("\n", ua.String, "should be tv")
 				fmt.Printf("%+v", ua)
 			}
 		}

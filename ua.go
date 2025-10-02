@@ -21,6 +21,7 @@ type UserAgent struct {
 	Tablet      bool
 	Desktop     bool
 	Bot         bool
+	TV          bool
 }
 
 // Constants for browsers and operating systems for easier comparison
@@ -54,6 +55,7 @@ const (
 	Mozilla          = "Mozilla"
 	Msie             = "MSIE"
 	SamsungBrowser   = "Samsung Browser"
+	LgBrowser        = "LG Browser"
 
 	GoogleAdsBot        = "Google Ads Bot"
 	Googlebot           = "Googlebot"
@@ -83,6 +85,10 @@ func Parse(userAgent string) UserAgent {
 
 	tokens := parse([]byte(userAgent))
 	ua.URL = tokens.url
+
+	// TV check
+	ua.TV = tokens.existsAny("SmartTV", "Smart TV", "SMART-TV", "Apple TV", "GoogleTV",
+		"PhilipsTV", "HbbTV")
 
 	// OS lookup
 	switch {
@@ -120,7 +126,7 @@ func Parse(userAgent string) UserAgent {
 		ua.OSVersion = tokens.findMacOSVersion()
 		ua.Desktop = true
 
-	case tokens.exists(Linux):
+	case tokens.existsAny(Linux, strings.ToUpper(Linux)):
 		ua.OS = Linux
 		ua.OSVersion = tokens.get(Linux)
 		ua.Desktop = true
@@ -161,7 +167,7 @@ func Parse(userAgent string) UserAgent {
 
 	case tokens.exists("Bytespider"):
 		ua.Name = "Bytespider"
-		ua.Mobile = tokens.exists("Mobile Safari")
+		ua.Mobile = tokens.exists(MobileSafari)
 		ua.Bot = true
 
 	case tokens.exists(Applebot):
@@ -260,6 +266,13 @@ func Parse(userAgent string) UserAgent {
 		ua.Version = tokens.get("SamsungBrowser")
 		ua.Mobile = tokens.existsAny(Mobile, MobileSafari)
 		ua.OS = Android
+
+	case tokens.get(LgBrowser) != "":
+		ua.Name = LgBrowser
+		ua.Version = tokens.get(LgBrowser)
+		if !ua.TV && len(ua.OSVersion) > 0 {
+			ua.TV = strings.Contains(strings.ToLower(ua.OSVersion), "smarttv")
+		}
 
 	case tokens.get("HeadlessChrome") != "":
 		ua.Name = HeadlessChrome
