@@ -180,6 +180,7 @@ var testTable = [][]string{
 	{"Mozilla/5.0 (Linux; NetCast; U) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.79 Safari/537.36 SmartTV/10.0 Colt/2.0", "SmartTV", "10.0", "tv", ua.Linux},
 	{"Mozilla/5.0 (SMART-TV; LINUX; Tizen 5.0) AppleWebKit/537.36 (KHTML, like Gecko) Version/5.0 TV Safari/537.36", "TV Safari", "537.36", "tv", ua.Linux},
 	{"Mozilla/5.0 (SMART-TV; Linux; Tizen 4.0) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/2.1 Chrome/56.0.2924.0 TV Safari/537.36", ua.SamsungBrowser, "2.1", "tv", ua.Android},
+	{"Mozilla/5.0 (Web0S; Linux/SmartTV) AppleWebKit/537.41 (KHTML, like Gecko) Large Screen Safari/537.41 LG Browser/7.00.00(LGE; WEBOS1; 05.06.10; 1); webOS.TV-2014; LG NetCast.TV-2013 Compatible (LGE, WEBOS1, wireless)", ua.LgBrowser, "7.00.00", "tv", ua.Linux},
 }
 
 func TestParse(t *testing.T) {

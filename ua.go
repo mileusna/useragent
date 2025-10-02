@@ -55,6 +55,7 @@ const (
 	Mozilla          = "Mozilla"
 	Msie             = "MSIE"
 	SamsungBrowser   = "Samsung Browser"
+	LgBrowser        = "LG Browser"
 
 	GoogleAdsBot        = "Google Ads Bot"
 	Googlebot           = "Googlebot"
@@ -265,6 +266,13 @@ func Parse(userAgent string) UserAgent {
 		ua.Version = tokens.get("SamsungBrowser")
 		ua.Mobile = tokens.existsAny(Mobile, MobileSafari)
 		ua.OS = Android
+
+	case tokens.get(LgBrowser) != "":
+		ua.Name = LgBrowser
+		ua.Version = tokens.get(LgBrowser)
+		if !ua.TV && len(ua.OSVersion) > 0 {
+			ua.TV = strings.Contains(strings.ToLower(ua.OSVersion), "smarttv")
+		}
 
 	case tokens.get("HeadlessChrome") != "":
 		ua.Name = HeadlessChrome
