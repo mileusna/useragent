@@ -21,7 +21,190 @@ type UserAgent struct {
 	Tablet      bool
 	Desktop     bool
 	Bot         bool
+}package ua
+
+import (
+ "bytes"
+ "regexp"
+ "strings"
+)
+
+// UserAgent struct containg all determined datra from parsed user-agent string
+type UserAgent struct {
+ Name      string
+ Version   string
+ OS        string
+ OSVersion string
+ Device    string
+
+ Mobile  bool
+ Tablet  bool
+ Desktop bool
+ Bot     bool
+ URL     string
+
+ String string
 }
+
+var ignore = map[string]struct{}{
+ "KHTML, like Gecko": struct{}{},
+ "U":                 struct{}{},
+ "compatible":        struct{}{},
+ "Mozilla":           struct{}{},
+ "WOW64":             struct{}{},
+}
+
+// Constants for browsers and operating systems for easier comparation
+const (
+ Windows      = "Windows"
+ WindowsPhone = "Windows Phone"
+ Android      = "Android"
+ MacOS        = "macOS"
+ IOS          = "iOS"
+ Linux        = "Linux"
+
+ Opera            = "Opera"
+ OperaMini        = "Opera Mini"
+ Chrome           = "Chrome"
+ Firefox          = "Firefox"
+ InternetExplorer = "Internet Explorer"
+ Safari           = "Safari"
+ Edge             = "Edge"
+ Vivaldi          = "Vivaldi"
+
+ Googlebot           = "Googlebot"
+ Twitterbot          = "Twitterbot"
+ FacebookExternalHit = "facebookexternalhit"
+)
+
+// Parse user agent string returning UserAgent struct
+func Parse(userAgent string) UserAgent {
+ ua := UserAgent{
+  String: userAgent,
+ }
+
+ tokens := parse(userAgent)
+
+ // check is there URL
+ for k := range tokens {
+  if strings.HasPrefix(k, "http://") || strings.HasPrefix(k, "https://") {
+   ua.URL = k
+   delete(tokens, k)
+   break
+  }
+ }
+
+ // OS lookup
+ switch {
+ case tokens.exists("Android"):
+  ua.OS = Android
+  ua.OSVersion = tokens[Android]
+  for s := range tokens {
+   if strings.HasSuffix(s, "Build") {
+    ua.Device = strings.TrimSpace(s[:len(s)-5])
+    ua.Tablet = strings.Contains(strings.ToLower(ua.Device), "tablet")
+   }
+  }
+
+ case tokens.exists("iPhone"):
+  ua.OS = IOS
+  ua.OSVersion = tokens.findMacOSVersion()
+  ua.Device = "iPhone"
+  ua.Mobile = true
+
+ case tokens.exists("iPad"):
+  ua.OS = IOS
+  ua.OSVersion = tokens.findMacOSVersion()
+  ua.Device = "iPad"
+  ua.Tablet = true
+
+ case tokens.exists("Windows NT"):
+  ua.OS = Windows
+  ua.OSVersion = tokens["Windows NT"]
+  ua.Desktop = true
+
+ case tokens.exists("Windows Phone OS"):
+  ua.OS = WindowsPhone
+  ua.OSVersion = tokens["Windows Phone OS"]
+  ua.Mobile = true
+
+ case tokens.exists("Macintosh"):
+  ua.OS = MacOS
+  ua.OSVersion = tokens.findMacOSVersion()
+  ua.Desktop = true
+
+ case tokens.exists("Linux"):
+  ua.OS = Linux
+  ua.OSVersion = tokens[Linux]
+  ua.Desktop = true
+
+ }
+
+ // for s, val := range sys {
+ //  fmt.Println(s, "--", val)
+ // }
+
+ switch {
+
+ case tokens.exists("Googlebot"):
+  ua.Name = Googlebot
+  ua.Version = tokens[Googlebot]
+  ua.Bot = true
+  ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
+
+ case tokens["Opera Mini"] != "":
+  ua.Name = OperaMini
+  ua.Version = tokens[OperaMini]
+  ua.Mobile = true
+
+ case tokens["OPR"] != "":
+  ua.Name = Opera
+  ua.Version = tokens["OPR"]
+  ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
+
+ // Opera on iOS
+ case tokens["OPiOS"] != "":
+  ua.Name = Opera
+  ua.Version = tokens["OPiOS"]
+  ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
+
+ // Chrome on iOS
+ case tokens["CriOS"] != "":
+  ua.Name = Chrome
+  ua.Version = tokens["CriOS"]
+  ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
+
+ // Firefox on iOS
+ case tokens["FxiOS"] != "":
+  ua.Name = Firefox
+  ua.Version = tokens["FxiOS"]
+  ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
+
+ case tokens["Firefox"] != "":
+  ua.Name = Firefox
+  ua.Version = tokens[Firefox]
+  _, ua.Mobile = tokens["Mobile"]
+  _, ua.Tablet = tokens["Tablet"]
+
+ case tokens["Vivaldi"] != "":
+  ua.Name = Vivaldi
+  ua.Version = tokens[Vivaldi]
+
+ case tokens.exists("MSIE"):
+  ua.Name = InternetExplorer
+  ua.Version = tokens["MSIE"]
+
+ case tokens["Edge"] != "":
+  ua.Name = Edge
+  ua.Version = tokens["Edge"]
+  ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
+
+ case tokens["bingbot"] != "":
+  ua.Name = "Bingbot"
+  ua.Version = tokens["bingbot"]
+  ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
+
+ case tokens["SamsungBrowser"] != "":
 
 // Constants for browsers and operating systems for easier comparison
 const (
