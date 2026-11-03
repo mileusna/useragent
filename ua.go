@@ -81,6 +81,13 @@ func Parse(userAgent string) UserAgent {
 		String: userAgent,
 	}
 
+	// cloud-run-proxy prepends its own product and platform to the browser's UA.
+	// Keep the original String, but do not treat the proxy as a browser.
+	if strings.HasPrefix(userAgent, "cloud-run-proxy/") {
+		if i := strings.Index(userAgent, " Mozilla/"); i != -1 {
+			userAgent = userAgent[i+1:]
+		}
+	}
 	tokens := parse([]byte(userAgent))
 	ua.URL = tokens.url
 
