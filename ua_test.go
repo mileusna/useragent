@@ -219,6 +219,51 @@ func TestParse(t *testing.T) {
 	}
 }
 
+func TestParseCloudRunProxy(t *testing.T) {
+	const prefix = "cloud-run-proxy/source (darwin/arm64) "
+	const browser = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+	got := ua.Parse(prefix + browser)
+	if got.Name != ua.Chrome || got.Version != "120.0.0.0" || got.VersionNo.Major != 120 {
+		t.Errorf("browser = %q %q (%+v), want Chrome 120.0.0.0", got.Name, got.Version, got.VersionNo)
+	}
+	if got.OS != ua.MacOS || got.OSVersion != "10.15.7" || got.OSVersionNo != (ua.VersionNo{Major: 10, Minor: 15, Patch: 7}) {
+		t.Errorf("OS = %q %q (%+v), want macOS 10.15.7", got.OS, got.OSVersion, got.OSVersionNo)
+	}
+	if !got.Desktop || got.Mobile || got.Tablet || got.Bot || got.Device != "" || got.URL != "" {
+		t.Errorf("unexpected device classification: %+v", got)
+	}
+	if got.String != prefix+browser {
+		t.Errorf("String = %q, want original user agent", got.String)
+	}
+
+	for _, agent := range []string{
+		browser,
+		"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15",
+		"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:120.0) Gecko/20100101 Firefox/120.0",
+		"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) QtWebEngine/5.6.0 Chrome/120.0.0.0 Safari/537.36",
+	} {
+		want := ua.Parse(agent)
+		got := ua.Parse(prefix + agent)
+		want.String = prefix + agent
+		if got != want {
+			t.Errorf("proxy changes browser identification for %q:\ngot  %+v\nwant %+v", agent, got, want)
+		}
+	}
+}
+
+func TestParseCloudRunProxyFallback(t *testing.T) {
+	for _, agent := range []string{
+		"cloud-run-proxy/source",
+		"cloud-run-proxy/source (darwin/arm64)",
+		"cloud-run-proxy/source (darwin/arm64) UnknownClient/1.0",
+	} {
+		got := ua.Parse(agent)
+		if got.Name != "cloud-run-proxy" || got.Version != "source" || got.String != agent {
+			t.Errorf("unexpected fallback for %q: %+v", agent, got)
+		}
+	}
+}
+
 var testUA ua.UserAgent
 
 func BenchmarkUserAgent(b *testing.B) {
